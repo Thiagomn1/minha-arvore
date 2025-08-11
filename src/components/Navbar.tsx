@@ -86,7 +86,7 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
               title=""
               className="text-base font-medium text-black transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-white hover:text-white"
             >
-              <button className="bg-gray-800 rounded-md px-4 py-2 hover:cursor-pointer hover:bg-gray-900 transition">
+              <button className="btn btn-primary rounded-md">
                 <span className="text-white">Entrar</span>
               </button>
             </Link>

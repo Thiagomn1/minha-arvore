@@ -35,9 +35,7 @@ export default function Hero() {
                 <Link
                   href="/co2"
                   title=""
-                  className="inline-flex items-center justify-center px-3 py-3 text-base font-bold leading-7 text-gray-900 transition-all duration-200 
-                bg-green-400 border border-transparent rounded-md sm:px-6 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-900 
-                focus:ring-white hover:bg-gray-200"
+                  className="btn btn-success rounded-lg p-6 text-base text-black"
                   role="button"
                 >
                   Calcule seu impacto de CO₂
