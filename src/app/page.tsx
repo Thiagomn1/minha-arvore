@@ -55,6 +55,7 @@ export default function Home() {
           </p>
         </div>
       </section>
+      <div className="divider m-auto w-4/5"></div>
       <div className="flex flex-col justify-center items-center">
         <h2 className="text-2xl font-bold mb-4 text-white">Em Destaque</h2>
         <CategoryList
@@ -62,11 +63,12 @@ export default function Home() {
           active={active}
           onChange={setActive}
         />
-        <div className="grid grid-cols-3 gap-4 mt-4">
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8 w-full max-w-7xl mx-auto">
           {products
             .filter((p: Product) => p.category === active)
             .map((p: Product) => (
-              <ProductCard key={p.id} product={p} onAdd={onAdd} />
+              <ProductCard product={p} key={p.id} onAdd={onAdd} />
             ))}
         </div>
       </div>

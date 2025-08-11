@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { Product } from "../types/ProductTypes";
 
 export default function ProductCard({
@@ -8,20 +9,29 @@ export default function ProductCard({
   onAdd: (product: Product) => void;
 }) {
   return (
-    <div className="border rounded p-4 shadow-sm">
-      <div className="h-40 bg-gray-100 mb-3 flex items-center justify-center">
-        {product.image}
-      </div>
-      <h3 className="font-semibold">{product.name}</h3>
-      <p className="text-sm text-gray-600">{product.description}</p>
-      <div className="mt-3 flex items-center justify-between">
-        <strong>R$ {product.price}</strong>
-        <button
-          className="bg-green-600 text-white px-3 py-1 rounded hover:cursor-pointer"
-          onClick={() => onAdd(product)}
-        >
-          Plantar
-        </button>
+    <div
+      key={product.id}
+      className="card bg-base-100 shadow-xl border border-green-100 hover:shadow-2xl transition"
+    >
+      <figure className="px-4 pt-4">
+        <Image
+          src={null}
+          alt={product.name}
+          className="rounded-xl object-cover h-48 w-full"
+        />
+      </figure>
+      <div className="card-body items-center text-center">
+        <h3 className="card-title text-black">{product.name}</h3>
+        <p className="text-gray-600">{product.description}</p>
+        <p className="text-lg font-bold text-green-600">R$ {product.price}</p>
+        <div className="card-actions">
+          <button
+            className="btn btn-success rounded-md"
+            onClick={() => onAdd(product)}
+          >
+            Adicionar ao Carrinho
+          </button>
+        </div>
       </div>
     </div>
   );
