@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import naturebg from "../assets/naturebg.webp";
 import Image from "next/image";
