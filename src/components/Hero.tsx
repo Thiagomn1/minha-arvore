@@ -1,6 +1,5 @@
 "use client";
 import React from "react";
-import naturebg from "../assets/naturebg.webp";
 import Image from "next/image";
 import Link from "next/link";
 import Navbar from "./Navbar";
@@ -10,7 +9,7 @@ export default function Hero() {
     <>
       <section className="relative h-screen w-full">
         <Image
-          src={naturebg}
+          src="/naturebg.webp"
           alt="Hero background"
           fill
           className="object-cover"

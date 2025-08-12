@@ -22,10 +22,12 @@ const authOptions: AuthOptions = {
 
         await dbConnect();
 
+        console.log(credentials);
+
         const user = await User.findOne({ email: credentials.email });
 
         if (!user) {
-          throw new Error("No user found");
+          throw new Error("Usuário não encontrado");
         }
 
         const isValid = await bcrypt.compare(
@@ -34,7 +36,7 @@ const authOptions: AuthOptions = {
         );
 
         if (!isValid) {
-          throw new Error("Invalid password");
+          throw new Error("Senha incorreta");
         }
 
         return {

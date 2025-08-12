@@ -7,7 +7,6 @@ import { useCart } from "../context/useCart";
 import { Product } from "../types/ProductTypes";
 import Hero from "../components/Hero";
 import Image from "next/image";
-import homesobre from "../assets/homesobre.jpg";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -33,8 +32,10 @@ export default function Home() {
       <section className="w-ful py-12 px-6 md:px-16 flex flex-col md:flex-row items-center gap-8">
         <div className="flex-1">
           <Image
-            src={homesobre}
+            src="/homesobre.jpg"
             alt="Natureza e árvores"
+            width={800}
+            height={800}
             className="w-full h-auto rounded-lg shadow-lg object-cover"
           />
         </div>
