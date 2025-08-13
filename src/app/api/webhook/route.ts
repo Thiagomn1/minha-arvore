@@ -39,10 +39,22 @@ export async function POST(req: NextApiRequest, res: NextApiResponse) {
 
   if (event.type === "checkout.session.completed") {
     const session = event.data.object;
-    await Order.findOneAndUpdate(
-      { stripeSessionId: session.id },
-      { status: "em processo" }
-    );
+
+    const products = JSON.parse(session.metadata?.products || "[]");
+
+    try {
+      await Order.create({
+        userId: session.customer_email || "Desconhecido",
+        products,
+        total: (session.amount_total ?? 0) / 100,
+        status: "Em Processo",
+        stripeSessionId: session.id,
+      });
+      console.log("Pedido criado com sucesso via webhook:", session.id);
+    } catch (err) {
+      console.error("Erro ao criar pedido:", err);
+      return res.status(500).send("Erro ao criar pedido");
+    }
   }
 
   return res.status(200).json({ received: true });

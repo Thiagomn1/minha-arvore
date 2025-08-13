@@ -36,6 +36,7 @@ export async function GET() {
     return NextResponse.json({
       message: "Produtos sincronizados com sucesso!",
     });
+    //eslint-disable-next-line
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

@@ -14,7 +14,11 @@ const OrderSchema = new mongoose.Schema(
       },
     ],
     total: Number,
-    status: { type: String, default: "pendente" },
+    status: {
+      type: String,
+      enum: ["Pendente", "Em Processo", "Plantado"],
+      default: "Pendente",
+    },
     stripeSessionId: String,
   },
   { timestamps: true }
