@@ -1,4 +1,4 @@
-import { Category } from "../types/ProductTypes";
+import { Category } from "@/types/ProductTypes";
 
 export default function CategoryList({
   categories,

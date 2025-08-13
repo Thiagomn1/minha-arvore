@@ -1,36 +1,88 @@
 "use client";
+import { calcularEmissaoCO2 } from "@/lib/calculoCo2";
 import { useState } from "react";
 
-function calcCO2(people: number) {
-  // very rough: avg emissions per person/year Brazil ~2.1 tCO2 (example)
-  return (people * 2.1).toFixed(2);
-}
-
 export default function CO2() {
-  const [people, setPeople] = useState(1);
+  const [energiaEletricaKwh, setEnergiaEletricaKwh] = useState(1);
+  const [gasKg, setGasKg] = useState(1);
+  const [transporteKm, setTransporteKm] = useState(1);
   const [result, setResult] = useState<string | null>(null);
+
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Calculadora de emissão de CO₂</h2>
-      <div className="max-w-md">
-        <label className="block">Número de pessoas</label>
-        <input
-          type="number"
-          value={people}
-          onChange={(e) => setPeople(Number(e.target.value))}
-          className="border p-2 rounded w-full"
-        />
-        <button
-          onClick={() => setResult(calcCO2(people))}
-          className="mt-3 bg-green-600 text-white px-3 py-1 rounded"
-        >
-          Calcular
-        </button>
-        {result && (
-          <div className="mt-4 p-3 bg-gray-100 rounded">
-            Emissão anual estimada: <strong>{result} tCO₂</strong>
+    <div className="flex items-center justify-center min-h-screen bg-green-50">
+      <div className="card w-full max-w-md bg-base-100 shadow-lg border border-green-200">
+        <div className="card-body">
+          <h2 className="card-title text-green-700 text-3xl justify-center">
+            🌿 Calculadora de Emissão de CO₂
+          </h2>
+
+          <div>
+            <label className="label">
+              <span className="label-text text-green-800 font-medium">
+                Consumo de energia elétrica (kWh/mês)
+              </span>
+            </label>
+            <input
+              type="number"
+              value={energiaEletricaKwh}
+              onChange={(e) => setEnergiaEletricaKwh(Number(e.target.value))}
+              className="input input-bordered w-full border-green-300 focus:border-green-500"
+            />
           </div>
-        )}
+
+          <div>
+            <label className="label">
+              <span className="label-text text-green-800 font-medium">
+                Consumo de gás (kg/mês)
+              </span>
+            </label>
+            <input
+              type="number"
+              value={gasKg}
+              onChange={(e) => setGasKg(Number(e.target.value))}
+              className="input input-bordered w-full border-green-300 focus:border-green-500"
+            />
+          </div>
+
+          <div>
+            <label className="label">
+              <span className="label-text text-green-800 font-medium">
+                Transporte terrestre (km/mês)
+              </span>
+            </label>
+            <input
+              type="number"
+              value={transporteKm}
+              onChange={(e) => setTransporteKm(Number(e.target.value))}
+              className="input input-bordered w-full border-green-300 focus:border-green-500"
+            />
+          </div>
+
+          <div className="card-actions mt-4">
+            <button
+              onClick={() =>
+                setResult(
+                  calcularEmissaoCO2({
+                    energiaEletricaKwh,
+                    gasKg,
+                    transporteKm,
+                  }).toFixed(2)
+                )
+              }
+              className="btn btn-success w-full rounded-md"
+            >
+              Calcular
+            </button>
+          </div>
+
+          {result && (
+            <div className="alert alert-success mt-4 text-center">
+              <span>
+                🌱 Emissão mensal estimada: <strong>{result} kg CO₂</strong>
+              </span>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

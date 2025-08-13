@@ -1,5 +1,5 @@
 import Image from "next/image";
-import { Product } from "../types/ProductTypes";
+import { Product } from "@/types/ProductTypes";
 
 export default function ProductCard({
   product,
@@ -8,6 +8,7 @@ export default function ProductCard({
   product: Product;
   onAdd: (product: Product) => void;
 }) {
+  console.log(product);
   return (
     <div
       key={product.id}
@@ -15,7 +16,9 @@ export default function ProductCard({
     >
       <figure className="px-4 pt-4">
         <Image
-          src={null}
+          src={product.imageUrl}
+          width={800}
+          height={800}
           alt={product.name}
           className="rounded-xl object-cover h-48 w-full"
         />

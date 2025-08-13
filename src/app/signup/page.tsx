@@ -3,9 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
-import { validateCPF } from "../../lib/cpfValidator";
+import { validateCPF } from "@/lib/cpfValidator";
 
-export default function RegisterPage() {
+export default function Register() {
   const router = useRouter();
 
   const [name, setName] = useState("");
@@ -22,8 +22,14 @@ export default function RegisterPage() {
   const [loading, setLoading] = useState(false);
   const [showToast, setShowToast] = useState(false);
 
-  const isEmailValid = (value: string) => {
-    return /\S+@\S+\.\S+/.test(value);
+  const isEmailValid = (value: string) => /\S+@\S+\.\S+/.test(value);
+
+  const formatCPF = (value: string) => {
+    return value
+      .replace(/\D/g, "")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d)/, "$1.$2")
+      .replace(/(\d{3})(\d{1,2})$/, "$1-$2");
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -49,12 +55,12 @@ export default function RegisterPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("/api/register", {
+      const res = await fetch("/api/auth/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           name,
-          cpf: cpf.replace(/[^\d]/g, ""),
+          cpf: cpf.replace(/\D/g, ""),
           email,
           password,
         }),
@@ -65,12 +71,18 @@ export default function RegisterPage() {
       if (!res.ok) {
         throw new Error(data?.message || "Erro ao criar conta");
       }
-      setShowToast(true);
 
-      // redireciona após 2s
+      setShowToast(true);
+      setName("");
+      setCpf("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+
       setTimeout(() => {
         router.push("/login");
       }, 2000);
+      //eslint-disable-next-line
     } catch (err: any) {
       setErrorMsg(err.message || "Erro desconhecido");
     } finally {
@@ -128,9 +140,10 @@ export default function RegisterPage() {
                 <input
                   type="text"
                   value={cpf}
-                  onChange={(e) => setCpf(e.target.value)}
+                  onChange={(e) => setCpf(formatCPF(e.target.value))}
                   required
-                  placeholder="Apenas números"
+                  maxLength={14}
+                  placeholder="000.000.000-00"
                   className="input input-bordered w-full"
                 />
                 {fieldErrors.cpf && (
@@ -198,7 +211,7 @@ export default function RegisterPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="btn btn-primary w-full rounded-md"
+                  className="btn btn-success text-white w-full rounded-md"
                 >
                   {loading ? "Cadastrando..." : "Criar Conta"}
                 </button>

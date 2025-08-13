@@ -1,28 +1,33 @@
 "use client";
 import { useState, useEffect } from "react";
-import ProductCard from "../components/ProductCard";
-import CategoryList from "../components/CategoryList";
-import { categories as catMock } from "../lib/mockData";
-import { useCart } from "../context/useCart";
-import { Product } from "../types/ProductTypes";
+import ProductCard from "@/components/ProductCard";
+import CategoryList from "@/components/CategoryList";
+import { categories as catMock } from "@/lib/mockData";
+import { useCart } from "@/context/useCart";
+import { Category, Product } from "@/types/ProductTypes";
 import Hero from "../components/Hero";
 import Image from "next/image";
 
 export default function Home() {
-  const [products, setProducts] = useState([]);
-  const [active, setActive] = useState(catMock[0].id);
+  const [products, setProducts] = useState<Product[]>([]);
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [active, setActive] = useState("");
   const add = useCart((s) => s.add);
 
   useEffect(() => {
     fetch("/api/products")
       .then((r) => r.json())
-      .then(setProducts);
+      .then((data) => {
+        console.log(data);
+        setProducts(data.products);
+        setCategories(data.categories);
+        setActive(data.categories[0]?.id || "");
+      });
   }, []);
 
   const onAdd = (p: Product) => {
     add({ id: p.id, name: p.name, price: p.price, qty: 1 });
   };
-
   return (
     <>
       <Hero />
@@ -60,15 +65,18 @@ export default function Home() {
       <div className="flex flex-col justify-center items-center">
         <h2 className="text-2xl font-bold mb-4 text-white">Em Destaque</h2>
         <CategoryList
-          categories={catMock}
+          categories={categories}
           active={active}
           onChange={setActive}
         />
 
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8 w-full max-w-7xl mx-auto">
           {products
-            .filter((p: Product) => p.category === active)
-            .map((p: Product) => (
+            .filter(
+              (p) =>
+                categories.find((c) => c.id === active)?.name === p.category
+            )
+            .map((p) => (
               <ProductCard product={p} key={p.id} onAdd={onAdd} />
             ))}
         </div>

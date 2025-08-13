@@ -1,12 +1,11 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { useCart } from "../../context/useCart";
-import MapPicker from "../../components/MapPicker";
+import { useCart } from "@/context/useCart";
+import MapPicker from "@/components/MapPicker";
 
 export default function CartPage() {
   const [hasMounted, setHasMounted] = useState(false);
-
   const items = useCart((s) => s.items);
   const total = useCart((s) => s.total)();
   const remove = useCart((s) => s.remove);
@@ -15,31 +14,49 @@ export default function CartPage() {
   const [location, setLocation] = useState({ lat: "", lng: "" });
   const [loading, setLoading] = useState(false);
 
+  console.log(items);
+
   useEffect(() => {
     setHasMounted(true);
   }, []);
 
-  if (!hasMounted) {
-    return null;
-  }
+  if (!hasMounted) return null;
 
   const setMapLocation = (lat: string, lng: string) => {
     setLocation({ lat, lng });
   };
 
   const checkout = async () => {
+    if (!items.length || !location.lat || !location.lng) return;
     setLoading(true);
-    const res = await fetch("/api/checkout", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({ cart: items, location }),
-    });
-    const data = await res.json();
-    setLoading(false);
-    if (data.ok) {
-      clear();
-      router.push("/");
-      alert("Pedido criado! ID: " + data.orderId);
+
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          products: items.map((i) => ({
+            productId: i.id,
+            quantity: i.qty,
+          })),
+          location,
+        }),
+      });
+
+      const data = await res.json();
+
+      if (data.url) {
+        // Redireciona para o Stripe Checkout
+        window.location.href = data.url;
+      } else {
+        alert("Erro ao criar checkout.");
+      }
+      //eslint-disable-next-line
+    } catch (err: any) {
+      console.error(err);
+      alert("Ocorreu um erro ao processar o pagamento.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -78,16 +95,19 @@ export default function CartPage() {
             Total: <strong>R$ {total}</strong>
           </div>
         </div>
+
         <div>
           <h3 className="font-semibold">Onde plantar?</h3>
           <MapPicker onPick={setMapLocation} />
           <div className="mt-3">
             <button
-              disabled={!items.length || !location || loading}
+              disabled={
+                !items.length || !location.lat || !location.lng || loading
+              }
               onClick={checkout}
               className="bg-blue-600 text-white px-4 py-2 rounded"
             >
-              {loading ? "Processando..." : "Finalizar e pagar (mock)"}
+              {loading ? "Processando..." : "Finalizar e pagar"}
             </button>
           </div>
         </div>
