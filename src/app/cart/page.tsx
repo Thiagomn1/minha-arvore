@@ -3,6 +3,7 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useCart } from "@/context/useCart";
 import MapPicker from "@/components/MapPicker";
+import Image from "next/image";
 
 export default function CartPage() {
   const [hasMounted, setHasMounted] = useState(false);
@@ -13,8 +14,6 @@ export default function CartPage() {
   const router = useRouter();
   const [location, setLocation] = useState({ lat: "", lng: "" });
   const [loading, setLoading] = useState(false);
-
-  console.log(items);
 
   useEffect(() => {
     setHasMounted(true);
@@ -46,8 +45,7 @@ export default function CartPage() {
       const data = await res.json();
 
       if (data.url) {
-        // Redireciona para o Stripe Checkout
-        window.location.href = data.url;
+        window.location.href = data.url; // Redireciona para Stripe Checkout
       } else {
         alert("Erro ao criar checkout.");
       }
@@ -60,55 +58,99 @@ export default function CartPage() {
     }
   };
 
+  console.log(items);
+
   return (
-    <div>
-      <h2 className="text-2xl font-bold mb-4">Seu Carrinho</h2>
-      <div className="grid grid-cols-2 gap-6">
+    <div className="max-w-5xl mx-auto p-6">
+      <h2 className="text-3xl font-bold mb-6 text-primary">Seu Carrinho</h2>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        {/* Lista de Itens */}
         <div>
           {items.length === 0 ? (
-            <p>Seu carrinho está vazio.</p>
+            <div className="alert alert-info shadow-lg">
+              <span>Seu carrinho está vazio.</span>
+            </div>
           ) : (
-            <ul className="space-y-3">
+            <ul className="space-y-4">
               {items.map((i) => (
                 <li
                   key={i.id}
-                  className="border p-3 rounded flex justify-between items-center"
+                  className="card card-bordered bg-base-100 shadow-md"
                 >
-                  <div>
-                    <strong>{i.name}</strong>
-                    <div className="text-sm">Qtd: {i.qty}</div>
-                  </div>
-                  <div>
-                    <div>R$ {i.price * i.qty}</div>
-                    <button
-                      className="text-red-600 text-sm"
-                      onClick={() => remove(i.id)}
-                    >
-                      Remover
-                    </button>
+                  <div className="card-body p-4 flex flex-row gap-4 items-center">
+                    {/* Imagem do produto */}
+                    <div className="w-20 h-20 flex-shrink-0">
+                      <Image
+                        src={i.image}
+                        alt={i.name}
+                        width={500}
+                        height={500}
+                        className="w-full h-full object-cover rounded-md"
+                      />
+                    </div>
+
+                    {/* Informações do produto */}
+                    <div className="flex-1">
+                      <h4 className="font-bold">{i.name}</h4>
+                      <p className="text-sm opacity-70">Qtd: {i.qty}</p>
+                    </div>
+
+                    {/* Preço e botão remover */}
+                    <div className="text-right">
+                      <p className="font-semibold">
+                        R$ {(i.price * i.qty).toFixed(2)}
+                      </p>
+                      <button
+                        className="btn btn-error btn-xs mt-2 rounded-md"
+                        onClick={() => remove(i.id)}
+                      >
+                        Remover
+                      </button>
+                    </div>
                   </div>
                 </li>
               ))}
             </ul>
           )}
-          <div className="mt-4">
-            Total: <strong>R$ {total}</strong>
-          </div>
+
+          {items.length > 0 && (
+            <div className="mt-6 p-4 bg-base-200 rounded-lg flex justify-between items-center">
+              <span className="text-lg font-bold">Total:</span>
+              <span className="text-lg text-primary font-bold">
+                R$ {total.toFixed(2)}
+              </span>
+            </div>
+          )}
         </div>
 
+        {/* Mapa e Checkout */}
         <div>
-          <h3 className="font-semibold">Onde plantar?</h3>
+          <h3 className="font-semibold mb-2">Onde plantar?</h3>
           <MapPicker onPick={setMapLocation} />
-          <div className="mt-3">
+
+          <div className="mt-4 flex flex-col gap-3">
             <button
               disabled={
                 !items.length || !location.lat || !location.lng || loading
               }
               onClick={checkout}
-              className="bg-blue-600 text-white px-4 py-2 rounded"
+              className="btn btn-primary w-full rounded-md"
             >
-              {loading ? "Processando..." : "Finalizar e pagar"}
+              {loading ? (
+                <span className="loading loading-spinner"></span>
+              ) : (
+                "Finalizar e pagar"
+              )}
             </button>
+            {items.length > 0 && (
+              <button
+                onClick={clear}
+                className="btn btn-outline btn-error w-full rounded-md"
+              >
+                Limpar Carrinho
+              </button>
+            )}
           </div>
         </div>
       </div>

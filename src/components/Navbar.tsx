@@ -2,13 +2,13 @@
 import React from "react";
 import Link from "next/link";
 import { signOut, useSession } from "next-auth/react";
-import { ShoppingCartIcon } from "@heroicons/react/24/outline"; // heroicons
+import { ShoppingCartIcon, Bars3Icon } from "@heroicons/react/24/outline";
 import { useCart } from "@/context/useCart";
 
 export default function Navbar({ gradient = false }: { gradient?: boolean }) {
   const { data: session, status } = useSession();
   const loading = status === "loading";
-  const cartCount = useCart((s) => s.items.length); // quantidade de itens no carrinho
+  const cartCount = useCart((s) => s.items.length);
 
   return (
     <div
@@ -20,11 +20,38 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
     >
       {/* navbar-start */}
       <div className="navbar-start">
-        {/* ...seu código do dropdown e logo */}
+        <Link
+          href="/"
+          className="text-xl font-bold text-white hover:text-green-600 transition-colors"
+        >
+          Minha Árvore
+        </Link>
       </div>
 
       {/* navbar-center */}
-      <div className="navbar-center hidden lg:flex">{/* ...seu menu */}</div>
+      <div className="navbar-center hidden lg:flex">
+        <ul className="menu menu-horizontal px-1">
+          <li>
+            <Link href="/co2">Cálculo CO₂</Link>
+          </li>
+          <li>
+            <details>
+              <summary>Catálogo</summary>
+              <ul className="p-2 bg-base-100">
+                <li>
+                  <Link href="/catalogo/arvores">Árvores</Link>
+                </li>
+                <li>
+                  <Link href="/catalogo/acessorios">Acessórios</Link>
+                </li>
+              </ul>
+            </details>
+          </li>
+          <li>
+            <Link href="/sobre">Sobre</Link>
+          </li>
+        </ul>
+      </div>
 
       {/* navbar-end */}
       <div className="navbar-end flex items-center gap-2">
@@ -33,18 +60,16 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
             Carregando
           </div>
         ) : session?.user ? (
-          <div className="flex items-center gap-4">
-            {/* Ícone do carrinho */}
+          <div className="flex items-center gap-2">
             <Link href="/cart" className="relative">
-              <ShoppingCartIcon className="h-6 w-6 text-gray-700 hover:text-gray-900" />
+              <ShoppingCartIcon className="h-6 w-6 text-gray-700 hover:text-gray-900 mr-4" />
               {cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
+                <span className="absolute -top-2 right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
                   {cartCount}
                 </span>
               )}
             </Link>
 
-            {/* Dropdown do usuário */}
             <div className="dropdown dropdown-end">
               <label
                 tabIndex={0}
@@ -83,6 +108,37 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
                   >
                     Logout
                   </button>
+                </li>
+              </ul>
+            </div>
+
+            {/* Menu para telas pequenas */}
+            <div className="dropdown dropdown-end lg:hidden">
+              <label tabIndex={0} className="btn btn-ghost btn-circle">
+                <Bars3Icon className="h-6 w-6" />
+              </label>
+              <ul
+                tabIndex={0}
+                className="dropdown-content menu p-2 shadow bg-base-100 rounded-box w-52 mt-4"
+              >
+                <li>
+                  <Link href="/co2">Cálculo CO₂</Link>
+                </li>
+                <li>
+                  <details>
+                    <summary>Catálogo</summary>
+                    <ul className="p-2 bg-base-100">
+                      <li>
+                        <Link href="/catalogo/arvores">Árvores</Link>
+                      </li>
+                      <li>
+                        <Link href="/catalogo/acessorios">Acessórios</Link>
+                      </li>
+                    </ul>
+                  </details>
+                </li>
+                <li>
+                  <Link href="/sobre">Sobre</Link>
                 </li>
               </ul>
             </div>

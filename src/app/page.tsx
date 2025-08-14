@@ -18,7 +18,6 @@ export default function Home() {
     fetch("/api/products")
       .then((r) => r.json())
       .then((data) => {
-        console.log(data);
         setProducts(data.products);
         setCategories(data.categories);
         setActive(data.categories[0]?.id || "");
@@ -26,7 +25,13 @@ export default function Home() {
   }, []);
 
   const onAdd = (p: Product) => {
-    add({ id: p.id, name: p.name, price: p.price, qty: 1 });
+    add({
+      id: p.id,
+      name: p.name,
+      price: p.price,
+      qty: 1,
+      image: p.imageUrl,
+    });
   };
   return (
     <>
