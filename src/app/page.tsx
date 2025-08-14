@@ -5,7 +5,7 @@ import CategoryList from "@/components/CategoryList";
 import { categories as catMock } from "@/lib/mockData";
 import { useCart } from "@/context/useCart";
 import { Category, Product } from "@/types/ProductTypes";
-import Hero from "../components/Hero";
+import Hero from "../components/ui/Hero";
 import Image from "next/image";
 
 export default function Home() {

@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 import { calcularEmissaoCO2 } from "@/lib/calculoCo2";
 import { useState } from "react";
 
@@ -59,20 +60,21 @@ export default function CO2() {
           </div>
 
           <div className="card-actions mt-4">
-            <button
+            <Button
+              variant="success"
+              fullWidth
               onClick={() =>
                 setResult(
                   calcularEmissaoCO2({
-                    energiaEletricaKwh,
-                    gasKg,
-                    transporteKm,
+                    energiaEletricaKwh: 1,
+                    gasKg: 1,
+                    transporteKm: 1,
                   }).toFixed(2)
                 )
               }
-              className="btn btn-success w-full rounded-md"
             >
               Calcular
-            </button>
+            </Button>
           </div>
 
           {result && (

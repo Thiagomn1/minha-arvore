@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useCart } from "@/context/useCart";
 import MapPicker from "@/components/MapPicker";
 import Image from "next/image";
+import Button from "@/components/ui/Button";
 
 export default function CartPage() {
   const [hasMounted, setHasMounted] = useState(false);
@@ -101,12 +102,13 @@ export default function CartPage() {
                       <p className="font-semibold">
                         R$ {(i.price * i.qty).toFixed(2)}
                       </p>
-                      <button
-                        className="btn btn-error btn-xs mt-2 rounded-md"
+                      <Button
+                        variant="error"
+                        className="btn-xs mt-2"
                         onClick={() => remove(i.id)}
                       >
                         Remover
-                      </button>
+                      </Button>
                     </div>
                   </div>
                 </li>
@@ -130,7 +132,7 @@ export default function CartPage() {
           <MapPicker onPick={setMapLocation} />
 
           <div className="mt-4 flex flex-col gap-3">
-            <button
+            <Button
               disabled={
                 !items.length || !location.lat || !location.lng || loading
               }
@@ -142,14 +144,11 @@ export default function CartPage() {
               ) : (
                 "Finalizar e pagar"
               )}
-            </button>
+            </Button>
             {items.length > 0 && (
-              <button
-                onClick={clear}
-                className="btn btn-outline btn-error w-full rounded-md"
-              >
+              <Button onClick={clear} variant="error" outline>
                 Limpar Carrinho
-              </button>
+              </Button>
             )}
           </div>
         </div>

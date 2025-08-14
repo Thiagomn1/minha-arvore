@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { Product } from "@/types/ProductTypes";
+import Button from "./ui/Button";
 
 export default function ProductCard({
   product,
@@ -28,12 +29,9 @@ export default function ProductCard({
         <p className="text-gray-600">{product.description}</p>
         <p className="text-lg font-bold text-green-600">R$ {product.price}</p>
         <div className="card-actions">
-          <button
-            className="btn btn-success rounded-md"
-            onClick={() => onAdd(product)}
-          >
+          <Button variant="success" onClick={() => onAdd(product)}>
             Adicionar ao Carrinho
-          </button>
+          </Button>
         </div>
       </div>
     </div>

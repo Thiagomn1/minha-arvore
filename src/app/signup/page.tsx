@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { validateCPF } from "@/lib/cpfValidator";
+import Button from "@/components/ui/Button";
 
 export default function Register() {
   const router = useRouter();
@@ -208,13 +209,14 @@ export default function Register() {
               )}
 
               <div className="form-control mt-6">
-                <button
+                <Button
                   type="submit"
+                  variant="success"
+                  fullWidth
                   disabled={loading}
-                  className="btn btn-success text-white w-full rounded-md"
                 >
                   {loading ? "Cadastrando..." : "Criar Conta"}
-                </button>
+                </Button>
               </div>
             </form>
 

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import Button from "@/components/ui/Button";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -96,12 +97,9 @@ export default function Login() {
                 )}
 
                 <div className="form-control mt-6">
-                  <button
-                    type="submit"
-                    className="btn btn-success text-white w-full rounded-md"
-                  >
+                  <Button type="submit" fullWidth variant="success">
                     Entrar
-                  </button>
+                  </Button>
                 </div>
               </form>
 

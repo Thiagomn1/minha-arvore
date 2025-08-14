@@ -1,4 +1,5 @@
 import { Category } from "@/types/ProductTypes";
+import Button from "./ui/Button";
 
 export default function CategoryList({
   categories,
@@ -31,15 +32,16 @@ export default function CategoryList({
         {categories.map((c) => {
           const isActive = active === c.id;
           return (
-            <button
+            <Button
               key={c.id}
+              variant="success"
               onClick={() => onChange(c.id)}
-              className={`tab transition-all duration-200 rounded-md px-4 mx-2 ${
-                isActive ? "tab-active bg-green-600 text-white" : "bg-gray-100"
+              className={`tab transition-all duration-200 px-4 mx-2 ${
+                isActive ? "tab-active border-green" : "bg-gray-100"
               }`}
             >
               {c.name}
-            </button>
+            </Button>
           );
         })}
       </div>

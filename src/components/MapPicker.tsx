@@ -1,3 +1,5 @@
+import Button from "./ui/Button";
+
 export default function MapPicker({
   onPick,
 }: {
@@ -19,7 +21,7 @@ export default function MapPicker({
           id="lng"
         />
       </div>
-      <button
+      <Button
         onClick={() => {
           const lat =
             (document.getElementById("lat") as HTMLInputElement).value ||
@@ -29,10 +31,11 @@ export default function MapPicker({
             "-46.6333";
           onPick(lat, lng);
         }}
-        className="mt-3 bg-blue-600 text-white px-3 py-1 rounded"
+        variant="success"
+        className="mt-3  px-3 py-1"
       >
         Confirmar ponto
-      </button>
+      </Button>
     </div>
   );
 }
