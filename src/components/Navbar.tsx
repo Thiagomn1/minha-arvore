@@ -74,7 +74,7 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
                 tabIndex={0}
                 className="btn btn-success rounded-md text-base cursor-pointer flex items-center gap-2"
               >
-                {session.user.name || "Usuário"}
+                {session.user.name.split(" ")[0] || "Usuário"}
                 <svg
                   className="dropdown-arrow"
                   xmlns="http://www.w3.org/2000/svg"

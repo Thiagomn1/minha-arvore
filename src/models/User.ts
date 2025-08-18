@@ -1,20 +1,23 @@
-import { Schema, Document, models, model } from "mongoose";
+import mongoose from "mongoose";
 
-export interface IUser extends Document {
-  name: string;
-  cpf: string;
-  email: string;
-  password: string;
-  createdAt: Date;
-}
-
-const UserSchema = new Schema<IUser>({
+const UserSchema = new mongoose.Schema({
   name: { type: String, required: true },
-  cpf: { type: String, required: true, unique: true },
+  tipoPessoa: { type: String, enum: ["PF", "PJ"], required: true },
+  cpf: { type: String },
+  cnpj: { type: String },
   email: { type: String, required: true, unique: true },
+  telefone: { type: String, required: true },
+  endereco: {
+    rua: String,
+    numero: String,
+    bairro: String,
+    cidade: String,
+    estado: String,
+    cep: String,
+  },
   password: { type: String, required: true },
-  createdAt: { type: Date, default: Date.now },
+  consentimentoLGPD: { type: Boolean, required: true },
+  role: { type: String, enum: ["User", "Admin"], default: "User" },
 });
 
-// Evita recompilar o modelo no hot reload (Next.js)
-export default models.User || model<IUser>("User", UserSchema);
+export default mongoose.models.User || mongoose.model("User", UserSchema);
