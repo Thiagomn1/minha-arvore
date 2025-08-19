@@ -6,6 +6,8 @@ import Image from "next/image";
 import { validateCPF } from "@/lib/cpfValidator";
 import { validateCNPJ } from "@/lib/cnpjValidator";
 import Button from "@/components/ui/Button";
+import { SelectEstado } from "@/components/ui/SelectEstado";
+import { SelectCidade } from "@/components/ui/SelectCidade";
 
 interface Endereco {
   rua: string;
@@ -320,10 +322,11 @@ export default function Register() {
                   placeholder="(00) 00000-0000"
                 />
               </div>
+
               {/* Endereço */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Rua + Número */}
-                <div className="form-control col-span-1 md:col-span-1">
+                <div className="form-control">
                   <label className="label">
                     <span className="label-text font-semibold">Rua</span>
                   </label>
@@ -337,7 +340,7 @@ export default function Register() {
                     className="input input-bordered w-full"
                   />
                 </div>
-                <div className="form-control col-span-1 md:col-span-1">
+                <div className="form-control">
                   <label className="label">
                     <span className="label-text font-semibold">Número</span>
                   </label>
@@ -352,8 +355,8 @@ export default function Register() {
                   />
                 </div>
 
-                {/* Bairro + Cidade */}
-                <div className="form-control">
+                {/* Bairro */}
+                <div className="form-control md:col-span-2">
                   <label className="label">
                     <span className="label-text font-semibold">Bairro</span>
                   </label>
@@ -367,37 +370,38 @@ export default function Register() {
                     className="input input-bordered w-full"
                   />
                 </div>
-                <div className="form-control">
-                  <label className="label">
-                    <span className="label-text font-semibold">Cidade</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={endereco.cidade}
-                    onChange={(e) =>
-                      handleEnderecoChange("cidade", e.target.value)
-                    }
-                    required
-                    className="input input-bordered w-full"
-                  />
-                </div>
 
-                {/* Estado + CEP */}
-                <div className="form-control">
+                {/* Estado */}
+                <div className="form-control w-full">
                   <label className="label">
                     <span className="label-text font-semibold">Estado</span>
                   </label>
-                  <input
-                    type="text"
-                    value={endereco.estado}
-                    onChange={(e) =>
-                      handleEnderecoChange("estado", e.target.value)
-                    }
-                    required
-                    className="input input-bordered w-full"
-                  />
+                  <div className="w-full">
+                    <SelectEstado
+                      onChange={(estado) =>
+                        handleEnderecoChange("estado", estado || "")
+                      }
+                    />
+                  </div>
                 </div>
-                <div className="form-control">
+
+                {/* Cidade */}
+                <div className="form-control w-full">
+                  <label className="label">
+                    <span className="label-text font-semibold">Cidade</span>
+                  </label>
+                  <div className="w-full">
+                    <SelectCidade
+                      uf={endereco.estado}
+                      onChange={(cidade) =>
+                        handleEnderecoChange("cidade", cidade || "")
+                      }
+                    />
+                  </div>
+                </div>
+
+                {/* CEP */}
+                <div className="form-control md:col-span-2">
                   <label className="label">
                     <span className="label-text font-semibold">CEP</span>
                   </label>
@@ -412,6 +416,7 @@ export default function Register() {
                   />
                 </div>
               </div>
+
               {/* Senha */}
               <div className="form-control">
                 <label className="label">
