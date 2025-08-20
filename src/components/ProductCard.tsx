@@ -9,7 +9,6 @@ export default function ProductCard({
   product: Product;
   onAdd: (product: Product) => void;
 }) {
-  console.log(product);
   return (
     <div
       key={product.id}

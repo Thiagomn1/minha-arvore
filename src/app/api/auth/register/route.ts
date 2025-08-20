@@ -18,8 +18,6 @@ export async function POST(request: Request) {
       consentimentoLGPD,
     } = body;
 
-    console.log(body);
-
     if (!name || !tipoPessoa || !email || !telefone || !password) {
       return NextResponse.json(
         { message: "Campos obrigatórios em falta" },
@@ -59,7 +57,6 @@ export async function POST(request: Request) {
     }
 
     const existingUser = await User.findOne({ $or: query });
-    console.log(existingUser);
 
     if (existingUser) {
       return NextResponse.json(

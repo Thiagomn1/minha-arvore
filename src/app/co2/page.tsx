@@ -8,31 +8,39 @@ import {
   BoltIcon,
   FireIcon,
   BeakerIcon,
+  TruckIcon,
 } from "@heroicons/react/24/solid";
 
 const fatores = {
-  energiaEletrica: 0.000051, // ton CO2 / kWh (exemplo Brasil média)
+  energiaEletrica: 0.000051, // ton CO2 / kWh (Brasil média aproximada)
   glp: 0.0029, // ton CO2 / kg
   gasNatural: 0.0019, // ton CO2 / m³
+  transporteTerrestre: 0.000192, // ton CO2 / km (aprox. 192 g/km carro médio)
 };
 
 export default function CO2() {
   const [energiaEletricaKwh, setEnergiaEletricaKwh] = useState(0);
   const [glpKg, setGlpKg] = useState(0);
   const [gasNaturalM3, setGasNaturalM3] = useState(0);
+  const [kmRodados, setKmRodados] = useState(0);
   const [resultado, setResultado] = useState<string | null>(null);
 
   const calcular = () => {
     const emissaoEnergia = energiaEletricaKwh * fatores.energiaEletrica * 12;
     const emissaoGLP = glpKg * fatores.glp * 12;
     const emissaoGas = gasNaturalM3 * fatores.gasNatural * 12;
+    const emissaoTransporte = kmRodados * fatores.transporteTerrestre * 12;
 
-    const total = emissaoEnergia + emissaoGLP + emissaoGas;
+    const total = emissaoEnergia + emissaoGLP + emissaoGas + emissaoTransporte;
+
+    // estimativa de árvores (uma árvore captura aprox. 0.165 tCO₂/ano)
+    const arvoresNecessarias = Math.ceil(total / 0.165);
 
     setResultado(
       `Sua emissão estimada é de ${total.toFixed(
         2
-      )} toneladas de CO₂ por ano. 🌍`
+      )} toneladas de CO₂ por ano 🌍. 
+      Seriam necessárias cerca de ${arvoresNecessarias} árvores para compensar essa emissão. 🌳`
     );
   };
 
@@ -47,9 +55,9 @@ export default function CO2() {
               Compense sua emissão de CO₂
             </h1>
             <p className="text-lg text-green-700 leading-relaxed">
-              Calcule suas emissões de CO₂ a partir do consumo de energia, gás e
-              outras atividades, e descubra quantas árvores seriam necessárias
-              para compensar sua pegada de carbono.
+              Calcule suas emissões de CO₂ a partir do consumo de energia, gás,
+              transporte e outras atividades, e descubra quantas árvores seriam
+              necessárias para compensar sua pegada de carbono.
             </p>
           </div>
           <div className="flex-shrink-0">
@@ -65,99 +73,119 @@ export default function CO2() {
       </div>
 
       {/* Calculadora */}
-      <div className="max-w-4xl mx-auto p-6 space-y-6">
+      <div className="max-w-5xl flex flex-wrap gap-6 mx-auto p-6 justify-center">
         {/* Energia Elétrica */}
-        <div className="rounded-lg overflow-hidden shadow-md">
-          <div className="bg-sky-900 text-white px-4 py-2 font-bold">
-            ENERGIA ELÉTRICA DA REDE
-          </div>
-          <div className="grid grid-cols-3 bg-teal-600 text-white p-6">
-            <div className="flex justify-center items-center">
-              <BoltIcon className="w-16 h-16" />
-            </div>
-            <div className="col-span-2 flex flex-col justify-center">
-              <p className="font-semibold mb-2">Atividade</p>
-              <label className="flex items-center gap-2 border-b border-white/50 pb-2">
-                Consumo de Energia Elétrica
-                <input
-                  type="number"
-                  value={energiaEletricaKwh}
-                  onChange={(e) =>
-                    setEnergiaEletricaKwh(Number(e.target.value))
-                  }
-                  className="text-black px-2 py-1 rounded w-28"
-                />
-                <span>KWh por mês</span>
-              </label>
-            </div>
+        <div className="card shadow-lg w-96 h-64">
+          <div className="card-body bg-base-100">
+            <h2 className="card-title text-sky-900">
+              <BoltIcon className="w-8 h-8 text-sky-700" />
+              Energia Elétrica da Rede
+            </h2>
+            <label className="form-control w-full">
+              <div className="label">
+                <span className="label-text">Consumo mensal</span>
+              </div>
+              <input
+                type="number"
+                value={energiaEletricaKwh}
+                onChange={(e) => setEnergiaEletricaKwh(Number(e.target.value))}
+                className="input input-bordered w-full"
+              />
+              <div className="label">
+                <span className="label-text-alt">kWh por mês</span>
+              </div>
+            </label>
           </div>
         </div>
 
         {/* GLP */}
-        <div className="rounded-lg overflow-hidden shadow-md">
-          <div className="bg-sky-900 text-white px-4 py-2 font-bold">
-            GLP (GÁS LIQUEFEITO DE PETRÓLEO – BOTIJÃO)
-          </div>
-          <div className="grid grid-cols-3 bg-teal-600 text-white p-6">
-            <div className="flex justify-center items-center">
-              <FireIcon className="w-16 h-16" />
-            </div>
-            <div className="col-span-2 flex flex-col justify-center">
-              <p className="font-semibold mb-2">Atividade</p>
-              <label className="flex items-center gap-2 border-b border-white/50 pb-2">
-                Consumo de gás de cozinha
-                <input
-                  type="number"
-                  value={glpKg}
-                  onChange={(e) => setGlpKg(Number(e.target.value))}
-                  className="text-black px-2 py-1 rounded w-28"
-                />
-                <span>Kg por mês</span>
-              </label>
-            </div>
+        <div className="card shadow-lg w-96 h-64">
+          <div className="card-body bg-base-100">
+            <h2 className="card-title text-sky-900">
+              <FireIcon className="w-8 h-8 text-orange-600" />
+              Gás GLP (Botijão)
+            </h2>
+            <label className="form-control w-full">
+              <div className="label">
+                <span className="label-text">Consumo mensal</span>
+              </div>
+              <input
+                type="number"
+                value={glpKg}
+                onChange={(e) => setGlpKg(Number(e.target.value))}
+                className="input input-bordered w-full"
+              />
+              <div className="label">
+                <span className="label-text-alt">Kg por mês</span>
+              </div>
+            </label>
           </div>
         </div>
 
         {/* Gás Natural */}
-        <div className="rounded-lg overflow-hidden shadow-md">
-          <div className="bg-sky-900 text-white px-4 py-2 font-bold">
-            GÁS NATURAL (GÁS DE ENCANAMENTO)
-          </div>
-          <div className="grid grid-cols-3 bg-teal-600 text-white p-6">
-            <div className="flex justify-center items-center">
-              <BeakerIcon className="w-16 h-16" />
-            </div>
-            <div className="col-span-2 flex flex-col justify-center">
-              <p className="font-semibold mb-2">Atividade</p>
-              <label className="flex items-center gap-2 border-b border-white/50 pb-2">
-                Gás de cozinha ou aquecimento de água
-                <input
-                  type="number"
-                  value={gasNaturalM3}
-                  onChange={(e) => setGasNaturalM3(Number(e.target.value))}
-                  className="text-black px-2 py-1 rounded w-28"
-                />
-                <span>Metros cúbicos por mês</span>
-              </label>
-            </div>
+        <div className="card shadow-lg w-96 h-64">
+          <div className="card-body bg-base-100">
+            <h2 className="card-title text-sky-900">
+              <BeakerIcon className="w-8 h-8 text-green-600" />
+              Gás Natural (Encanado)
+            </h2>
+            <label className="form-control w-full">
+              <div className="label">
+                <span className="label-text">Consumo mensal</span>
+              </div>
+              <input
+                type="number"
+                value={gasNaturalM3}
+                onChange={(e) => setGasNaturalM3(Number(e.target.value))}
+                className="input input-bordered w-full"
+              />
+              <div className="label">
+                <span className="label-text-alt whitespace-nowrap">
+                  m³ por mês
+                </span>
+              </div>
+            </label>
           </div>
         </div>
 
-        {/* Botão Calcular */}
-        <div className="flex justify-center">
-          <button
-            onClick={calcular}
-            className="flex items-center gap-2 bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-xl shadow-md font-semibold"
-          >
-            <CalculatorIcon className="w-6 h-6" />
-            Calcular Emissão
-          </button>
+        {/* Transporte Terrestre */}
+        <div className="card shadow-lg w-96 h-64">
+          <div className="card-body bg-base-100">
+            <h2 className="card-title text-sky-900">
+              <TruckIcon className="w-8 h-8 text-emerald-600" />
+              Transporte Terrestre
+            </h2>
+            <label className="form-control w-full">
+              <div className="label">
+                <span className="label-text">Quilômetros rodados</span>
+              </div>
+              <input
+                type="number"
+                value={kmRodados}
+                onChange={(e) => setKmRodados(Number(e.target.value))}
+                className="input input-bordered w-full"
+              />
+              <div className="label">
+                <span className="label-text-alt">Km por mês</span>
+              </div>
+            </label>
+          </div>
         </div>
+      </div>
+
+      {/* Botão Calcular */}
+      <div className="flex flex-col items-center">
+        <button onClick={calcular} className="btn btn-success gap-2 px-6">
+          <CalculatorIcon className="w-6 h-6" />
+          Calcular Emissão
+        </button>
 
         {/* Resultado */}
         {resultado && (
-          <div className="mt-6 p-4 bg-white rounded-lg shadow text-center text-green-800 font-bold text-xl">
-            {resultado}
+          <div className="alert alert-success shadow-lg mt-6 max-w-3xl">
+            <span className="text-lg font-bold whitespace-pre-line">
+              {resultado}
+            </span>
           </div>
         )}
       </div>

@@ -6,7 +6,6 @@ export async function GET() {
   await dbConnect();
 
   const products = await Product.find({ status: "Disponível" });
-  console.log(products);
 
   const categories = Array.from(
     new Set(products.map((p) => p.category || "geral"))
