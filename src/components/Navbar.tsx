@@ -104,6 +104,11 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
                   <Link href="/pedidos">Pedidos</Link>
                 </li>
                 <li>
+                  {session?.user?.role === "Admin" && (
+                    <Link href="/admin">Admin</Link>
+                  )}
+                </li>
+                <li>
                   <button
                     onClick={() => signOut()}
                     className="text-left w-full"

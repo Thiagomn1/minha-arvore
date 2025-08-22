@@ -42,6 +42,7 @@ export const authOptions: AuthOptions = {
           name: user.name,
           email: user.email,
           cpf: user.cpf,
+          role: user.role,
         };
       },
     }),
@@ -64,9 +65,11 @@ export const authOptions: AuthOptions = {
         token.name = user.name;
         token.email = user.email;
         token.cpf = user.cpf;
+        token.role = user.role; // adiciona o role
       }
       return token;
     },
+
     async session({
       session,
       token,
@@ -79,6 +82,7 @@ export const authOptions: AuthOptions = {
         session.user.name = token.name as string;
         session.user.email = token.email as string;
         session.user.cpf = token.cpf as string;
+        session.user.role = token.role;
       }
       return session;
     },
