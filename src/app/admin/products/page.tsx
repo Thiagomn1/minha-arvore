@@ -9,7 +9,6 @@ interface ProductType {
   name: string;
   description?: string;
   price: number;
-  stripePriceId: string;
   imageUrl?: string;
   category?: string;
   status?: string;
@@ -23,7 +22,6 @@ export default function AdminProductsPage() {
     name: "",
     description: "",
     price: "",
-    stripePriceId: "",
     imageUrl: "",
     category: "",
     status: "Disponível",
@@ -59,10 +57,19 @@ export default function AdminProductsPage() {
   async function handleAddProduct(e: React.FormEvent) {
     e.preventDefault();
 
+    // validação básica
+    if (!newProduct.name || !newProduct.price) {
+      showToast("Nome e preço são obrigatórios", "error");
+      return;
+    }
+
     const res = await fetch("/api/admin/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(newProduct),
+      body: JSON.stringify({
+        ...newProduct,
+        price: parseFloat(newProduct.price),
+      }),
     });
 
     if (res.ok) {
@@ -73,7 +80,6 @@ export default function AdminProductsPage() {
         name: "",
         description: "",
         price: "",
-        stripePriceId: "",
         imageUrl: "",
         category: "",
         status: "Disponível",
@@ -89,7 +95,7 @@ export default function AdminProductsPage() {
       {/* Container de toasts */}
       <div id="toast-container" className="toast toast-top toast-end"></div>
 
-      {/* Menu lateral → mobile em cima, desktop na esquerda */}
+      {/* Menu lateral */}
       <aside className="bg-base-100 shadow-md p-4 w-full lg:w-64">
         <h2 className="text-xl font-bold mb-4 lg:mb-6 text-center lg:text-left">
           Admin
@@ -123,7 +129,7 @@ export default function AdminProductsPage() {
           <p>Carregando...</p>
         ) : (
           <div className="overflow-x-auto">
-            {/* Tabela em telas grandes */}
+            {/* Tabela */}
             <table className="table table-zebra hidden md:table w-full">
               <thead>
                 <tr>
@@ -210,17 +216,6 @@ export default function AdminProductsPage() {
                 }
               />
               <Input
-                label="Stripe Price ID"
-                type="text"
-                value={newProduct.stripePriceId}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    stripePriceId: e.target.value,
-                  })
-                }
-              />
-              <Input
                 label="URL da Imagem"
                 type="text"
                 value={newProduct.imageUrl}
@@ -236,6 +231,22 @@ export default function AdminProductsPage() {
                   setNewProduct({ ...newProduct, category: e.target.value })
                 }
               />
+
+              <div className="form-control">
+                <label className="label">
+                  <span className="label-text font-semibold">Status</span>
+                </label>
+                <select
+                  className="select select-bordered w-full"
+                  value={newProduct.status}
+                  onChange={(e) =>
+                    setNewProduct({ ...newProduct, status: e.target.value })
+                  }
+                >
+                  <option value="Disponível">Disponível</option>
+                  <option value="Indisponível">Indisponível</option>
+                </select>
+              </div>
 
               <div className="modal-action">
                 <Button type="submit" variant="primary">

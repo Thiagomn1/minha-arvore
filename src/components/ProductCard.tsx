@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import { Product } from "@/types/ProductTypes";
 import Button from "./ui/Button";
 
@@ -24,8 +25,15 @@ export default function ProductCard({
         />
       </figure>
       <div className="card-body items-center text-center">
-        <h3 className="card-title text-black">{product.name}</h3>
-        <p className="text-gray-600">{product.description}</p>
+        <Link href={`/products/${product.id}`} passHref>
+          <h3 className="card-title text-black hover:text-green-600 transition-colors cursor-pointer">
+            {product.name}
+          </h3>
+        </Link>
+
+        <p className="text-gray-600 line-clamp-2 transition-all duration-300">
+          {product.description}
+        </p>
         <p className="text-lg font-bold text-green-600">R$ {product.price}</p>
         <div className="card-actions">
           <Button variant="success" onClick={() => onAdd(product)}>
