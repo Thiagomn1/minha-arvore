@@ -130,7 +130,7 @@ export default function AdminProductsPage() {
         ) : (
           <div className="overflow-x-auto">
             {/* Tabela */}
-            <table className="table table-zebra hidden md:table w-full">
+            <table className="table-zebra hidden md:table w-full">
               <thead>
                 <tr>
                   <th>Nome</th>

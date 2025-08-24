@@ -45,9 +45,9 @@ export default function CO2() {
   };
 
   return (
-    <div className="bg-green-50 min-h-screen flex flex-col">
+    <div className=" min-h-screen flex flex-col mb-4">
       {/* Hero Section */}
-      <div className="hero bg-green-100 py-12 px-6">
+      <div className="hero bg-green-50 py-12 px-6">
         <div className="hero-content flex-col lg:flex-row gap-8 max-w-5xl">
           <div>
             <h1 className="text-4xl font-bold text-green-800 mb-4 flex items-center gap-2">
