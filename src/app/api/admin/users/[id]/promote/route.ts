@@ -1,6 +1,8 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/mongoose";
 import User from "@/models/User";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/lib/auth";
 
 interface Params {
   params: { id: string };
@@ -9,6 +11,12 @@ interface Params {
 export async function PUT(req: Request, { params }: Params) {
   try {
     await dbConnect();
+
+    const session = await getServerSession(authOptions);
+
+    if (!session || session.user.role !== "Admin") {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
 
     const user = await User.findById(params.id);
     if (!user) {

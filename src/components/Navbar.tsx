@@ -35,17 +35,7 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
             <Link href="/co2">Cálculo CO₂</Link>
           </li>
           <li>
-            <details>
-              <summary>Catálogo</summary>
-              <ul className="p-2 bg-base-100">
-                <li>
-                  <Link href="/catalogo/arvores">Árvores</Link>
-                </li>
-                <li>
-                  <Link href="/catalogo/acessorios">Acessórios</Link>
-                </li>
-              </ul>
-            </details>
+            <Link href="/products">Catálogo</Link>
           </li>
           <li>
             <Link href="/sobre">Sobre</Link>
@@ -132,17 +122,7 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
                   <Link href="/co2">Cálculo CO₂</Link>
                 </li>
                 <li>
-                  <details>
-                    <summary>Catálogo</summary>
-                    <ul className="p-2 bg-base-100">
-                      <li>
-                        <Link href="/catalogo/arvores">Árvores</Link>
-                      </li>
-                      <li>
-                        <Link href="/catalogo/acessorios">Acessórios</Link>
-                      </li>
-                    </ul>
-                  </details>
+                  <Link href="/products">Catálogo</Link>
                 </li>
                 <li>
                   <Link href="/sobre">Sobre</Link>
