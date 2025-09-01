@@ -24,6 +24,7 @@ const OrderSchema = new mongoose.Schema(
       latitude: { type: Number, required: true },
       longitude: { type: Number, required: true },
     },
+    mudaImage: String,
   },
   { timestamps: true }
 );

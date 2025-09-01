@@ -105,7 +105,7 @@ export default function AdminProductsPage() {
             <a href="/admin/">Home</a>
           </li>
           <li>
-            <a href="/admin/orders">Pedidos</a>
+            <a href="/admin/pedidos">Pedidos</a>
           </li>
           <li>
             <a href="/admin/users">Usuários</a>
@@ -126,7 +126,7 @@ export default function AdminProductsPage() {
         </div>
 
         {loading ? (
-          <p>Carregando...</p>
+          <p className="text-center text-gray-500">Carregando produtos...</p>
         ) : (
           <div className="overflow-x-auto">
             {/* Tabela */}

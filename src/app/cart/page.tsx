@@ -1,7 +1,7 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useCart } from "@/context/useCart";
 import MapPicker from "@/components/MapPicker";
 import Image from "next/image";
@@ -9,7 +9,6 @@ import Button from "@/components/ui/Button";
 
 export default function CartPage() {
   const { data: session } = useSession();
-  const [hasMounted, setHasMounted] = useState(false);
   const items = useCart((s) => s.items);
   const total = useCart((s) => s.total)();
   const remove = useCart((s) => s.remove);
@@ -17,12 +16,6 @@ export default function CartPage() {
   const router = useRouter();
   const [location, setLocation] = useState({ lat: "", lng: "" });
   const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    setHasMounted(true);
-  }, []);
-
-  if (!hasMounted) return null;
 
   const setMapLocation = (lat: string, lng: string) => {
     setLocation({ lat, lng });

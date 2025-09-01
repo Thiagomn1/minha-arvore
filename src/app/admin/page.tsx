@@ -11,7 +11,7 @@ export default function AdminHomePage() {
         </p>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
-          <a href="/admin/orders" className="card bg-base-100 shadow-xl p-6">
+          <a href="/admin/pedidos" className="card bg-base-100 shadow-xl p-6">
             <h2 className="text-xl font-semibold">📦 Pedidos</h2>
             <p>Gerencie todos os pedidos realizados.</p>
           </a>
