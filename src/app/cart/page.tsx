@@ -1,5 +1,6 @@
 "use client";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import { useCart } from "@/context/useCart";
 import MapPicker from "@/components/MapPicker";
@@ -7,6 +8,7 @@ import Image from "next/image";
 import Button from "@/components/ui/Button";
 
 export default function CartPage() {
+  const { data: session } = useSession();
   const [hasMounted, setHasMounted] = useState(false);
   const items = useCart((s) => s.items);
   const total = useCart((s) => s.total)();
@@ -38,22 +40,28 @@ export default function CartPage() {
           products: items.map((i) => ({
             productId: i.id,
             quantity: i.qty,
+            imageUrl: i.image,
           })),
-          location,
+          location: {
+            latitude: Number(location.lat),
+            longitude: Number(location.lng),
+          },
+          userId: session?.user?.id,
         }),
       });
 
       const data = await res.json();
 
-      if (data.url) {
-        window.location.href = data.url; // Redireciona para Stripe Checkout
+      if (res.ok) {
+        clear();
+        router.push(`/pedidos/${session?.user?.id}`);
       } else {
-        alert("Erro ao criar checkout.");
+        alert(data.error || "Erro ao criar pedido.");
       }
       //eslint-disable-next-line
     } catch (err: any) {
       console.error(err);
-      alert("Ocorreu um erro ao processar o pagamento.");
+      alert("Ocorreu um erro ao processar o pedido.");
     } finally {
       setLoading(false);
     }
@@ -78,7 +86,6 @@ export default function CartPage() {
                   className="card card-bordered bg-base-100 shadow-md"
                 >
                   <div className="card-body p-4 flex flex-row gap-4 items-center">
-                    {/* Imagem do produto */}
                     <div className="w-20 h-20 flex-shrink-0">
                       <Image
                         src={i.image}
@@ -89,13 +96,11 @@ export default function CartPage() {
                       />
                     </div>
 
-                    {/* Informações do produto */}
                     <div className="flex-1">
                       <h4 className="font-bold">{i.name}</h4>
                       <p className="text-sm opacity-70">Qtd: {i.qty}</p>
                     </div>
 
-                    {/* Preço e botão remover */}
                     <div className="text-right">
                       <p className="font-semibold">
                         R$ {(i.price * i.qty).toFixed(2)}
@@ -140,7 +145,7 @@ export default function CartPage() {
               {loading ? (
                 <span className="loading loading-spinner"></span>
               ) : (
-                "Finalizar e pagar"
+                "Finalizar Pedido"
               )}
             </Button>
             {items.length > 0 && (

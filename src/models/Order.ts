@@ -7,19 +7,23 @@ const OrderSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    orderId: { type: String, required: true },
     products: [
       {
         productId: { type: mongoose.Schema.Types.ObjectId, ref: "Product" },
-        quantity: Number,
+        quantity: { type: Number, default: 1 },
       },
     ],
-    total: Number,
+    total: { type: Number, required: true },
     status: {
       type: String,
       enum: ["Pendente", "Em Processo", "Plantado"],
       default: "Pendente",
     },
-    stripeSessionId: String,
+    location: {
+      latitude: { type: Number, required: true },
+      longitude: { type: Number, required: true },
+    },
   },
   { timestamps: true }
 );

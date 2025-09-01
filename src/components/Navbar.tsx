@@ -91,7 +91,7 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
                   <Link href="/perfil">Perfil</Link>
                 </li>
                 <li>
-                  <Link href="/pedidos">Pedidos</Link>
+                  <Link href={`/pedidos/${session?.user?.id}`}>Pedidos</Link>
                 </li>
                 <li>
                   {session?.user?.role === "Admin" && (
