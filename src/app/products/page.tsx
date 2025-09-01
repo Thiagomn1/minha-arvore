@@ -5,6 +5,7 @@ import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
 import { useCart } from "@/context/useCart";
 import { Category, Product } from "@/types/ProductTypes";
+import Link from "next/link";
 
 export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -38,7 +39,6 @@ export default function ProductsPage() {
         Catálogo
       </h1>
 
-      {/* Carousel de mudas em destaque */}
       <div className="carousel w-full rounded-lg shadow-lg mb-12">
         {products.slice(0, 5).map((p, idx) => (
           <div
@@ -46,13 +46,19 @@ export default function ProductsPage() {
             id={`slide${idx}`}
             className="carousel-item relative w-full"
           >
-            <Image
-              src={p.imageUrl}
-              alt={p.name}
-              width={1200}
-              height={500}
-              className="w-full h-[400px] object-cover"
-            />
+            <Link href={`/products/${p.id}`} className="w-full block">
+              <Image
+                src={p.imageUrl}
+                alt={p.name}
+                width={1200}
+                height={500}
+                className="w-full h-[400px] object-cover rounded-lg"
+              />
+              <div className="absolute bottom-5 left-5 bg-black/50 text-white px-4 py-2 rounded-lg">
+                <h3 className="text-xl font-bold">{p.name}</h3>
+                <p className="text-sm">R$ {p.price}</p>
+              </div>
+            </Link>
             <div className="absolute flex justify-between transform -translate-y-1/2 left-5 right-5 top-1/2">
               <a
                 href={`#slide${
@@ -79,7 +85,6 @@ export default function ProductsPage() {
         ))}
       </div>
 
-      {/* Lista de categorias */}
       <CategoryList
         categories={categories}
         active={active}

@@ -3,22 +3,37 @@
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
 
+interface Endereco {
+  rua?: string;
+  numero?: string;
+  bairro?: string;
+  cidade?: string;
+  estado?: string;
+  cep?: string;
+}
+
 interface UserType {
   _id: string;
   name: string;
   email: string;
   cpf?: string;
+  cnpj?: string;
+  telefone?: string;
+  tipoPessoa?: "PF" | "PJ";
+  endereco?: Endereco;
   role: "User" | "Admin";
 }
 
 export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
 
   useEffect(() => {
     async function fetchUsers() {
       const res = await fetch("/api/admin/users");
       const data = await res.json();
+      console.log(data);
       setUsers(data);
       setLoading(false);
     }
@@ -99,17 +114,21 @@ export default function AdminUsersPage() {
                 <tr>
                   <th>Nome</th>
                   <th>Email</th>
-                  <th>CPF</th>
+                  <th>CPF/CNPJ</th>
                   <th>Role</th>
                   <th>Ações</th>
                 </tr>
               </thead>
               <tbody>
                 {users.map((u) => (
-                  <tr key={u._id}>
+                  <tr
+                    key={u._id}
+                    className="cursor-pointer hover:bg-base-300"
+                    onClick={() => setSelectedUser(u)}
+                  >
                     <td>{u.name}</td>
                     <td>{u.email}</td>
-                    <td>{u.cpf || "-"}</td>
+                    <td>{u.cpf || u.cnpj || "-"}</td>
                     <td>
                       <span
                         className={`badge ${
@@ -123,7 +142,10 @@ export default function AdminUsersPage() {
                       {u.role !== "Admin" && (
                         <Button
                           variant="primary"
-                          onClick={() => handlePromote(u._id)}
+                          onClick={(e) => {
+                            e.stopPropagation(); // impede abrir modal
+                            handlePromote(u._id);
+                          }}
                         >
                           Tornar Admin
                         </Button>
@@ -139,14 +161,16 @@ export default function AdminUsersPage() {
               {users.map((u) => (
                 <div
                   key={u._id}
-                  className="card bg-base-100 shadow-md p-4 space-y-2"
+                  className="card bg-base-100 shadow-md p-4 space-y-2 cursor-pointer hover:bg-base-200"
+                  onClick={() => setSelectedUser(u)}
                 >
                   <h2 className="font-bold text-lg">{u.name}</h2>
                   <p>
                     <span className="font-semibold">Email:</span> {u.email}
                   </p>
                   <p>
-                    <span className="font-semibold">CPF:</span> {u.cpf || "-"}
+                    <span className="font-semibold">CPF/CNPJ:</span>{" "}
+                    {u.cpf || u.cnpj || "-"}
                   </p>
                   <p>
                     <span className="font-semibold">Role:</span>{" "}
@@ -161,7 +185,10 @@ export default function AdminUsersPage() {
                   {u.role !== "Admin" && (
                     <Button
                       variant="primary"
-                      onClick={() => handlePromote(u._id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handlePromote(u._id);
+                      }}
                     >
                       Tornar Admin
                     </Button>
@@ -172,6 +199,64 @@ export default function AdminUsersPage() {
           </div>
         )}
       </main>
+
+      {/* Modal de detalhes do usuário */}
+      {selectedUser && (
+        <dialog open className="modal modal-open">
+          <div className="modal-box max-w-2xl">
+            <h3 className="font-bold text-lg mb-4">
+              Detalhes do Usuário: {selectedUser.name}
+            </h3>
+            <div className="space-y-2">
+              <p>
+                <span className="font-semibold">Email:</span>{" "}
+                {selectedUser.email}
+              </p>
+              <p>
+                <span className="font-semibold">Telefone:</span>{" "}
+                {selectedUser.telefone || "-"}
+              </p>
+              <p>
+                <span className="font-semibold">Tipo Pessoa:</span>{" "}
+                {selectedUser.tipoPessoa}
+              </p>
+              <p>
+                <span className="font-semibold">CPF:</span>{" "}
+                {selectedUser.cpf || "-"}
+              </p>
+              <p>
+                <span className="font-semibold">CNPJ:</span>{" "}
+                {selectedUser.cnpj || "-"}
+              </p>
+              <p>
+                <span className="font-semibold">Endereço:</span>{" "}
+                {selectedUser.endereco
+                  ? `${selectedUser.endereco.rua || ""}, ${
+                      selectedUser.endereco.numero || ""
+                    } - ${selectedUser.endereco.bairro || ""}, ${
+                      selectedUser.endereco.cidade || ""
+                    } - ${selectedUser.endereco.estado || ""}, CEP: ${
+                      selectedUser.endereco.cep || ""
+                    }`
+                  : "-"}
+              </p>
+              <p>
+                <span className="font-semibold">Role:</span> {selectedUser.role}
+              </p>
+            </div>
+            <div className="modal-action">
+              <form method="dialog">
+                <Button
+                  variant="secondary"
+                  onClick={() => setSelectedUser(null)}
+                >
+                  Fechar
+                </Button>
+              </form>
+            </div>
+          </div>
+        </dialog>
+      )}
     </div>
   );
 }

@@ -49,9 +49,7 @@ export default async function ProductPage({
           </div>
 
           <div>
-            <h2 className="text-lg font-semibold mb-2 text-center">
-              Disponibilidade
-            </h2>
+            <h2 className="text-lg font-semibold mb-2">Disponibilidade</h2>
             <span
               className={`badge ${
                 product.status === "Disponível"
