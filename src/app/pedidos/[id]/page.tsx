@@ -4,6 +4,8 @@ import { Product } from "@/types/ProductTypes";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { getAddressFromCoords } from "@/lib/geocode";
+import MapModal from "@/components/MapModal"; // ajuste o caminho se necessário
 
 interface Order {
   _id: string;
@@ -23,6 +25,8 @@ export default function UserOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [message, setMessage] = useState<string | undefined | null>(null);
   const [loading, setLoading] = useState(true);
+  const [addresses, setAddresses] = useState<Record<string, string>>({});
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
 
   useEffect(() => {
     if (!params?.id) return;
@@ -34,6 +38,15 @@ export default function UserOrdersPage() {
       if (Array.isArray(data)) {
         setOrders(data);
         setMessage(null);
+
+        // Buscar endereços aproximados
+        data.forEach(async (order: Order) => {
+          const addr = await getAddressFromCoords(
+            order.location.latitude,
+            order.location.longitude
+          );
+          setAddresses((prev) => ({ ...prev, [order._id]: addr }));
+        });
       } else if ("message" in data) {
         setOrders([]);
         setMessage(data.message);
@@ -46,7 +59,6 @@ export default function UserOrdersPage() {
   }, [params?.id]);
 
   if (loading) return <p className="p-4">Carregando pedidos...</p>;
-
   if (message)
     return <p className="p-4 text-center text-gray-500">{message}</p>;
 
@@ -115,9 +127,11 @@ export default function UserOrdersPage() {
 
               <p className="font-bold mt-2">Total: R$ {order.total}</p>
 
-              <p className="text-sm text-gray-600 mt-1">
-                Local: Lat {order.location.latitude}, Lng{" "}
-                {order.location.longitude}
+              <p
+                className="text-sm text-blue-600 underline cursor-pointer mt-1"
+                onClick={() => setSelectedOrder(order)}
+              >
+                {addresses[order._id] || "Localização aproximada"}
               </p>
 
               {order.status === "Plantado" && (
@@ -129,6 +143,16 @@ export default function UserOrdersPage() {
           </div>
         ))}
       </div>
+
+      {/* Modal do MapModal */}
+      {selectedOrder && (
+        <MapModal
+          opened={!!selectedOrder}
+          onClose={() => setSelectedOrder(null)}
+          lat={selectedOrder.location.latitude}
+          lng={selectedOrder.location.longitude}
+        />
+      )}
     </div>
   );
 }

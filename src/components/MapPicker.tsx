@@ -1,41 +1,43 @@
-import Button from "./ui/Button";
+"use client";
+import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
+import { useState } from "react";
+import L from "leaflet";
+
+const markerIcon = new L.Icon({
+  iconUrl: "https://unpkg.com/leaflet@1.9.3/dist/images/marker-icon.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+});
 
 export default function MapPicker({
   onPick,
 }: {
   onPick: (lat: string, lng: string) => void;
 }) {
-  // Mock map: just pick coordinates via inputs for MVP
+  const [position, setPosition] = useState<[number, number] | null>(null);
+
+  function LocationMarker() {
+    useMapEvents({
+      click(e) {
+        const { lat, lng } = e.latlng;
+        setPosition([lat, lng]);
+        onPick(lat.toString(), lng.toString());
+      },
+    });
+    return position ? <Marker position={position} icon={markerIcon} /> : null;
+  }
+
   return (
-    <div className="border p-3 rounded">
-      <p className="text-sm text-gray-700">Selecione o ponto (mock)</p>
-      <div className="grid grid-cols-2 gap-2 mt-2">
-        <input
-          placeholder="Latitude (-23.xxx)"
-          className="border p-2 rounded"
-          id="lat"
-        />
-        <input
-          placeholder="Longitude (-46.xxx)"
-          className="border p-2 rounded"
-          id="lng"
-        />
-      </div>
-      <Button
-        onClick={() => {
-          const lat =
-            (document.getElementById("lat") as HTMLInputElement).value ||
-            "-23.5505";
-          const lng =
-            (document.getElementById("lng") as HTMLInputElement).value ||
-            "-46.6333";
-          onPick(lat, lng);
-        }}
-        variant="success"
-        className="mt-3  px-3 py-1"
-      >
-        Confirmar ponto
-      </Button>
-    </div>
+    <MapContainer
+      center={[-23.55052, -46.633308]}
+      zoom={12}
+      style={{ height: "400px", width: "100%", borderRadius: "12px" }}
+    >
+      <TileLayer
+        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+        attribution='&copy; <a href="https://www.openstreetmap.org/">OpenStreetMap</a>'
+      />
+      <LocationMarker />
+    </MapContainer>
   );
 }
