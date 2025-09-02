@@ -33,7 +33,6 @@ export default function AdminUsersPage() {
     async function fetchUsers() {
       const res = await fetch("/api/admin/usuarios");
       const data = await res.json();
-      console.log(data);
       setUsers(data);
       setLoading(false);
     }

@@ -19,7 +19,6 @@ export async function PUT(req: NextRequest) {
 
     // userId do usuário logado
     const userId = session.user.id;
-    console.log(body);
     const updatedUser = await updateUser(userId, type, payload);
 
     return NextResponse.json({ success: true, user: updatedUser });

@@ -1,15 +1,9 @@
 "use client";
 
+import { Product } from "@/types/ProductTypes";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-
-interface Product {
-  _id: string;
-  name: string;
-  imageUrl: string;
-  quantity: number;
-}
 
 interface Order {
   _id: string;
@@ -50,8 +44,6 @@ export default function UserOrdersPage() {
 
     fetchOrders();
   }, [params?.id]);
-
-  console.log(orders);
 
   if (loading) return <p className="p-4">Carregando pedidos...</p>;
 
@@ -114,7 +106,7 @@ export default function UserOrdersPage() {
                     <div>
                       <p className="font-semibold">{p.name}</p>
                       <p className="text-sm text-gray-500">
-                        Quantidade: {p.quantity}
+                        Quantidade: {p.qty}
                       </p>
                     </div>
                   </div>

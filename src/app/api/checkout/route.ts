@@ -19,7 +19,7 @@ async function generateUniqueOrderId() {
 
 async function createOrder(
   userId: string,
-  products: { productId: string; quantity: number }[],
+  products: { productId: string; qty: number }[],
   total: number,
   location: { latitude: number; longitude: number }
 ) {
@@ -36,7 +36,7 @@ async function createOrder(
       _id: prod._id,
       name: prod.name,
       imageUrl: prod.imageUrl,
-      quantity: p.quantity,
+      qty: p.qty,
     };
   });
 
@@ -76,8 +76,7 @@ export async function POST(req: Request) {
 
     const total = dbProducts.reduce((acc, prod) => {
       const qty =
-        products.find((p) => p.productId === prod._id.toString())?.quantity ||
-        1;
+        products.find((p) => p.productId === prod._id.toString())?.qty || 1;
       return acc + prod.price * qty;
     }, 0);
 

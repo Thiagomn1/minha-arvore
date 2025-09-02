@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import dbConnect from "@/lib/mongoose";
 import ProductModel from "@/models/Product";
-import { PlainProduct } from "@/types/ProductTypes";
+import { Product } from "@/types/ProductTypes";
 import AddToCartButton from "@/components/ui/AddToCartButton";
 
 export default async function ProductPage({
@@ -12,7 +12,7 @@ export default async function ProductPage({
 }) {
   await dbConnect();
 
-  function toPlainProduct(doc: any): PlainProduct {
+  function toPlainProduct(doc: any): Product {
     return {
       _id: doc._id.toString(),
       name: doc.name,
