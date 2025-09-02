@@ -116,10 +116,10 @@ export default function AdminOrdersPage() {
             <a className="active">Pedidos</a>
           </li>
           <li>
-            <a href="/admin/users">Usuários</a>
+            <a href="/admin/usuarios">Usuários</a>
           </li>
           <li>
-            <a href="/admin/products">Produtos</a>
+            <a href="/admin/produtos">Produtos</a>
           </li>
         </ul>
       </aside>

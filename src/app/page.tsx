@@ -2,7 +2,6 @@
 import { useState, useEffect } from "react";
 import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
-import { categories as catMock } from "@/lib/mockData";
 import { useCart } from "@/context/useCart";
 import { Category, Product } from "@/types/ProductTypes";
 import Hero from "../components/ui/Hero";
@@ -15,7 +14,7 @@ export default function Home() {
   const add = useCart((s) => s.add);
 
   useEffect(() => {
-    fetch("/api/products")
+    fetch("/api/produtos")
       .then((r) => r.json())
       .then((data) => {
         setProducts(data.products);
@@ -26,7 +25,7 @@ export default function Home() {
 
   const onAdd = (p: Product) => {
     add({
-      id: p.id,
+      _id: p._id,
       name: p.name,
       price: p.price,
       qty: 1,
@@ -82,7 +81,7 @@ export default function Home() {
                 categories.find((c) => c.id === active)?.name === p.category
             )
             .map((p) => (
-              <ProductCard product={p} key={p.id} onAdd={onAdd} />
+              <ProductCard product={p} key={p._id} onAdd={onAdd} />
             ))}
         </div>
       </div>

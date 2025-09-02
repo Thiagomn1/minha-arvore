@@ -35,7 +35,7 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
             <Link href="/co2">Cálculo CO₂</Link>
           </li>
           <li>
-            <Link href="/products">Catálogo</Link>
+            <Link href="/produtos">Catálogo</Link>
           </li>
           <li>
             <Link href="/sobre">Sobre</Link>
@@ -51,7 +51,7 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
           </div>
         ) : session?.user ? (
           <div className="flex items-center gap-2">
-            <Link href="/cart" className="relative">
+            <Link href="/carrinho" className="relative">
               <ShoppingCartIcon className="h-6 w-6 text-gray-700 hover:text-gray-900 mr-4" />
               {cartCount > 0 && (
                 <span className="absolute -top-2 right-2 bg-red-500 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full">
@@ -122,7 +122,7 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
                   <Link href="/co2">Cálculo CO₂</Link>
                 </li>
                 <li>
-                  <Link href="/products">Catálogo</Link>
+                  <Link href="/produtos">Catálogo</Link>
                 </li>
                 <li>
                   <Link href="/sobre">Sobre</Link>

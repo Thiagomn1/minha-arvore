@@ -12,7 +12,7 @@ export default function ProductCard({
 }) {
   return (
     <div
-      key={product.id}
+      key={product._id}
       className="card bg-base-100 shadow-xl border border-green-100 hover:shadow-2xl transition"
     >
       <figure className="px-4 pt-4">
@@ -25,7 +25,7 @@ export default function ProductCard({
         />
       </figure>
       <div className="card-body items-center text-center">
-        <Link href={`/products/${product.id}`} passHref>
+        <Link href={`/produtos/${product._id}`} passHref>
           <h3 className="card-title text-black hover:text-green-600 transition-colors cursor-pointer">
             {product.name}
           </h3>

@@ -2,7 +2,7 @@ import Image from "next/image";
 import { notFound } from "next/navigation";
 import dbConnect from "@/lib/mongoose";
 import ProductModel from "@/models/Product";
-import { Product } from "@/types/ProductTypes";
+import { PlainProduct } from "@/types/ProductTypes";
 import AddToCartButton from "@/components/ui/AddToCartButton";
 
 export default async function ProductPage({
@@ -12,13 +12,22 @@ export default async function ProductPage({
 }) {
   await dbConnect();
 
-  const product = (await ProductModel.findById(
-    params.id
-  ).lean()) as Product | null;
-
-  if (!product) {
-    notFound();
+  function toPlainProduct(doc: any): PlainProduct {
+    return {
+      _id: doc._id.toString(),
+      name: doc.name,
+      description: doc.description,
+      price: doc.price,
+      category: doc.category,
+      imageUrl: doc.imageUrl,
+      status: doc.status,
+    };
   }
+
+  const productDoc = await ProductModel.findById(params.id).lean();
+  if (!productDoc) notFound();
+
+  const product = toPlainProduct(productDoc);
 
   return (
     <div className="container mx-auto px-4 py-8">

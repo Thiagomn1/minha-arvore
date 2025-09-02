@@ -13,7 +13,7 @@ export async function GET() {
 
   return NextResponse.json({
     products: products.map((p) => ({
-      id: p._id.toString(),
+      _id: p._id.toString(),
       name: p.name,
       description: p.description,
       price: p.price,

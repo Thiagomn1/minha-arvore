@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
 type CartItem = {
-  id: string;
+  _id: string;
   name: string;
   price: number;
   qty: number;
@@ -12,7 +12,7 @@ type CartItem = {
 type State = {
   items: CartItem[];
   add: (item: CartItem) => void;
-  remove: (id: string) => void;
+  remove: (_id: string) => void;
   clear: () => void;
   total: () => number;
 };
@@ -23,7 +23,7 @@ export const useCart = create<State>()(
       items: [],
       add: (item) => {
         const items = [...get().items];
-        const idx = items.findIndex((i) => i.id === item.id);
+        const idx = items.findIndex((i) => i._id === item._id);
         if (idx >= 0) {
           items[idx].qty += item.qty;
         } else {
@@ -31,7 +31,7 @@ export const useCart = create<State>()(
         }
         set({ items });
       },
-      remove: (id) => set({ items: get().items.filter((i) => i.id !== id) }),
+      remove: (_id) => set({ items: get().items.filter((i) => i._id !== _id) }),
       clear: () => set({ items: [] }),
       total: () => get().items.reduce((s, i) => s + i.price * i.qty, 0),
     }),

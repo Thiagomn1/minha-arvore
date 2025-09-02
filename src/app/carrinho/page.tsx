@@ -31,7 +31,7 @@ export default function CartPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           products: items.map((i) => ({
-            productId: i.id,
+            productId: i._id,
             quantity: i.qty,
             imageUrl: i.image,
           })),
@@ -75,7 +75,7 @@ export default function CartPage() {
             <ul className="space-y-4">
               {items.map((i) => (
                 <li
-                  key={i.id}
+                  key={i._id}
                   className="card card-bordered bg-base-100 shadow-md"
                 >
                   <div className="card-body p-4 flex flex-row gap-4 items-center">
@@ -101,7 +101,7 @@ export default function CartPage() {
                       <Button
                         variant="error"
                         className="btn-xs mt-2"
-                        onClick={() => remove(i.id)}
+                        onClick={() => remove(i._id)}
                       >
                         Remover
                       </Button>

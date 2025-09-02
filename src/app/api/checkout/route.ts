@@ -33,7 +33,7 @@ async function createOrder(
     const prod = dbProducts.find((db) => db._id.toString() === p.productId);
     if (!prod) throw new Error("Produto não encontrado");
     return {
-      productId: prod._id,
+      _id: prod._id,
       name: prod.name,
       imageUrl: prod.imageUrl,
       quantity: p.quantity,
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
     }, 0);
 
     // Criar a ordem no MongoDB
-    const newOrder = createOrder(userId, products, total, location);
+    const newOrder = await createOrder(userId, products, total, location);
 
     return new NextResponse(JSON.stringify(newOrder), {
       status: 201,

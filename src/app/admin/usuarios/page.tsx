@@ -31,7 +31,7 @@ export default function AdminUsersPage() {
 
   useEffect(() => {
     async function fetchUsers() {
-      const res = await fetch("/api/admin/users");
+      const res = await fetch("/api/admin/usuarios");
       const data = await res.json();
       console.log(data);
       setUsers(data);
@@ -58,7 +58,7 @@ export default function AdminUsersPage() {
   }
 
   async function handlePromote(id: string) {
-    const res = await fetch(`/api/admin/users/${id}/promote`, {
+    const res = await fetch(`/api/admin/usuarios/${id}/promote`, {
       method: "PUT",
     });
 
@@ -93,7 +93,7 @@ export default function AdminUsersPage() {
             <a className="active">Usuários</a>
           </li>
           <li>
-            <a href="/admin/products">Produtos</a>
+            <a href="/admin/produtos">Produtos</a>
           </li>
         </ul>
       </aside>

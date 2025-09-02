@@ -14,7 +14,7 @@ export default function ProductsPage() {
   const add = useCart((s) => s.add);
 
   useEffect(() => {
-    fetch("/api/products")
+    fetch("/api/produtos")
       .then((r) => r.json())
       .then((data) => {
         setProducts(data.products);
@@ -25,7 +25,7 @@ export default function ProductsPage() {
 
   const onAdd = (p: Product) => {
     add({
-      id: p.id,
+      _id: p._id,
       name: p.name,
       price: p.price,
       qty: 1,
@@ -42,11 +42,11 @@ export default function ProductsPage() {
       <div className="carousel w-full rounded-lg shadow-lg mb-12">
         {products.slice(0, 5).map((p, idx) => (
           <div
-            key={p.id}
+            key={p._id}
             id={`slide${idx}`}
             className="carousel-item relative w-full"
           >
-            <Link href={`/products/${p.id}`} className="w-full block">
+            <Link href={`/products/${p._id}`} className="w-full block">
               <Image
                 src={p.imageUrl}
                 alt={p.name}
@@ -98,7 +98,7 @@ export default function ProductsPage() {
             (p) => categories.find((c) => c.id === active)?.name === p.category
           )
           .map((p) => (
-            <ProductCard product={p} key={p.id} onAdd={onAdd} />
+            <ProductCard product={p} key={p._id} onAdd={onAdd} />
           ))}
       </div>
     </div>

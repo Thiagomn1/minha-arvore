@@ -1,9 +1,19 @@
 export interface Product {
-  id: string;
+  _id: string;
   name: string;
   description: string;
   price: number;
   qty?: number;
+  category: string;
+  imageUrl: string;
+  status: string;
+}
+
+export interface PlainProduct {
+  _id: string;
+  name: string;
+  description: string;
+  price: number;
   category: string;
   imageUrl: string;
   status: string;

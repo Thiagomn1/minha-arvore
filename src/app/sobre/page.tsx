@@ -82,7 +82,7 @@ export default function Sobre() {
           Cada muda plantada é um passo na luta contra as mudanças climáticas.
           Juntos, podemos criar um futuro mais equilibrado e cheio de vida.
         </p>
-        <Link href="/products">
+        <Link href="/produtos">
           <button className="btn btn-lg btn-success shadow-lg">
             Plante sua Árvore Agora 🌱
           </button>

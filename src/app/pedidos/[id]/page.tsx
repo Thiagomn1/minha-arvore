@@ -5,11 +5,9 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 
 interface Product {
-  productId: {
-    _id: string;
-    name: string;
-    imageUrl: string;
-  };
+  _id: string;
+  name: string;
+  imageUrl: string;
   quantity: number;
 }
 
@@ -31,16 +29,16 @@ export default function UserOrdersPage() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [message, setMessage] = useState<string | undefined | null>(null);
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     if (!params?.id) return;
 
     async function fetchOrders() {
       const res = await fetch(`/api/pedidos/${params.id}`);
-      const data = await res.json(); // tipagem genérica, vamos verificar manualmente
-      console.log(data);
+      const data = await res.json();
 
       if (Array.isArray(data)) {
-        setOrders(data); // é um array de pedidos
+        setOrders(data);
         setMessage(null);
       } else if ("message" in data) {
         setOrders([]);
@@ -52,6 +50,8 @@ export default function UserOrdersPage() {
 
     fetchOrders();
   }, [params?.id]);
+
+  console.log(orders);
 
   if (loading) return <p className="p-4">Carregando pedidos...</p>;
 
@@ -71,9 +71,7 @@ export default function UserOrdersPage() {
             <input type="checkbox" />
             <div className="collapse-title flex items-center space-x-4">
               <Image
-                src={
-                  order.products[0]?.productId.imageUrl || "/placeholder.png"
-                }
+                src={order.products[0]?.imageUrl || "/placeholder.png"}
                 alt="Produto"
                 className="w-16 h-16 object-cover rounded"
                 width={500}
@@ -103,18 +101,18 @@ export default function UserOrdersPage() {
               <div className="space-y-2">
                 {order.products.map((p) => (
                   <div
-                    key={p.productId._id}
+                    key={p._id}
                     className="flex items-center space-x-4 border-b pb-2"
                   >
                     <Image
-                      src={p.productId.imageUrl || "/placeholder.png"}
-                      alt={p.productId.name}
+                      src={p.imageUrl || "/placeholder.png"}
+                      alt={p.name}
                       className="w-12 h-12 object-cover rounded"
                       width={500}
                       height={500}
                     />
                     <div>
-                      <p className="font-semibold">{p.productId.name}</p>
+                      <p className="font-semibold">{p.name}</p>
                       <p className="text-sm text-gray-500">
                         Quantidade: {p.quantity}
                       </p>

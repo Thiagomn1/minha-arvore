@@ -29,7 +29,7 @@ export default function AdminProductsPage() {
 
   useEffect(() => {
     async function fetchProducts() {
-      const res = await fetch("/api/admin/products");
+      const res = await fetch("/api/admin/produtos");
       const data = await res.json();
       setProducts(data);
       setLoading(false);
@@ -63,7 +63,7 @@ export default function AdminProductsPage() {
       return;
     }
 
-    const res = await fetch("/api/admin/products", {
+    const res = await fetch("/api/admin/produtos", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -108,7 +108,7 @@ export default function AdminProductsPage() {
             <a href="/admin/pedidos">Pedidos</a>
           </li>
           <li>
-            <a href="/admin/users">Usuários</a>
+            <a href="/admin/usuarios">Usuários</a>
           </li>
           <li className="font-semibold">
             <a className="active">Produtos</a>

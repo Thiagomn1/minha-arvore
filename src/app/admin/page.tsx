@@ -15,11 +15,11 @@ export default function AdminHomePage() {
             <h2 className="text-xl font-semibold">📦 Pedidos</h2>
             <p>Gerencie todos os pedidos realizados.</p>
           </a>
-          <a href="/admin/users" className="card bg-base-100 shadow-xl p-6">
+          <a href="/admin/usuarios" className="card bg-base-100 shadow-xl p-6">
             <h2 className="text-xl font-semibold">👥 Usuários</h2>
             <p>Controle os usuários do sistema.</p>
           </a>
-          <a href="/admin/products" className="card bg-base-100 shadow-xl p-6">
+          <a href="/admin/produtos" className="card bg-base-100 shadow-xl p-6">
             <h2 className="text-xl font-semibold">🛒 Produtos</h2>
             <p>Adicione, edite e remova produtos.</p>
           </a>
