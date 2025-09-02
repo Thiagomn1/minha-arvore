@@ -14,7 +14,7 @@ export async function GET(
     const orders = await Order.find({ userId: id })
       .populate({
         path: "products._id",
-        select: "name imageUrl", // não precisa do model se o ref está correto
+        select: "name imageUrl",
       })
       .sort({ createdAt: -1 })
       .lean();

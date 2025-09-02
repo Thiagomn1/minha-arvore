@@ -9,7 +9,6 @@ export default function AddToCartButton({
   product: PlainProduct;
 }) {
   const add = useCart((state) => state.add); // exemplo usando Zustand
-  console.log(product);
   const onAdd = () => {
     add({
       id: product._id,

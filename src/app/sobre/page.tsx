@@ -1,4 +1,5 @@
 "use client";
+import Button from "@/components/ui/Button";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -73,8 +74,7 @@ export default function Sobre() {
         </div>
       </section>
 
-      {/* Call to Action */}
-      <section className="py-16 px-6 md:px-20 text-center bg-gradient-to-r from-green-200 to-green-400">
+      <section className="py-16 px-6 md:px-20 text-center bg-gradient-to-r from-green-200 to-green-200">
         <h2 className="text-3xl font-bold text-black mb-6">
           Faça parte dessa mudança!
         </h2>
@@ -83,9 +83,9 @@ export default function Sobre() {
           Juntos, podemos criar um futuro mais equilibrado e cheio de vida.
         </p>
         <Link href="/produtos">
-          <button className="btn btn-lg btn-success shadow-lg">
+          <Button variant="success" className=" shadow-lg">
             Plante sua Árvore Agora 🌱
-          </button>
+          </Button>
         </Link>
       </section>
     </main>

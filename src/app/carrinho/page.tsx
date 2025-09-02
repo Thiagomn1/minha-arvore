@@ -21,6 +21,25 @@ export default function CartPage() {
     setLocation({ lat, lng });
   };
 
+  const showToast = (
+    message: string,
+    type: "success" | "error" = "success"
+  ) => {
+    const toastContainer = document.getElementById("toast-container");
+    if (!toastContainer) return;
+
+    const toast = document.createElement("div");
+    toast.className = `alert ${
+      type === "success" ? "alert-success" : "alert-error"
+    } shadow-lg`;
+    toast.innerHTML = `<span>${message}</span>`;
+    toastContainer.appendChild(toast);
+
+    setTimeout(() => {
+      toast.remove();
+    }, 3000);
+  };
+
   const checkout = async () => {
     if (!items.length || !location.lat || !location.lng) return;
     setLoading(true);
@@ -47,14 +66,15 @@ export default function CartPage() {
 
       if (res.ok) {
         clear();
+        showToast("Pedido criado com sucesso!");
         router.push(`/pedidos/${session?.user?.id}`);
       } else {
-        alert(data.error || "Erro ao criar pedido.");
+        showToast(data.error || "Erro ao criar pedido.", "error");
       }
       //eslint-disable-next-line
     } catch (err: any) {
       console.error(err);
-      alert("Ocorreu um erro ao processar o pedido.");
+      showToast("Ocorreu um erro ao processar o pedido.", "error");
     } finally {
       setLoading(false);
     }
@@ -62,6 +82,9 @@ export default function CartPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
+      {/* Toasts */}
+      <div id="toast-container" className="toast toast-top toast-end"></div>
+
       <h2 className="text-3xl font-bold mb-6 text-primary">Seu Carrinho</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -101,7 +124,10 @@ export default function CartPage() {
                       <Button
                         variant="error"
                         className="btn-xs mt-2"
-                        onClick={() => remove(i._id)}
+                        onClick={() => {
+                          remove(i._id);
+                          showToast(`${i.name} removido do carrinho.`, "error");
+                        }}
                       >
                         Remover
                       </Button>
@@ -142,7 +168,14 @@ export default function CartPage() {
               )}
             </Button>
             {items.length > 0 && (
-              <Button onClick={clear} variant="error" outline>
+              <Button
+                onClick={() => {
+                  clear();
+                  showToast("Carrinho limpo.", "error");
+                }}
+                variant="error"
+                outline
+              >
                 Limpar Carrinho
               </Button>
             )}
