@@ -23,12 +23,12 @@ export default function Home() {
       });
   }, []);
 
-  const onAdd = (p: Product) => {
+  const onAdd = (p: Product, qty: number) => {
     add({
       _id: p._id,
       name: p.name,
       price: p.price,
-      qty: 1,
+      qty: qty ?? 1,
       image: p.imageUrl,
     });
   };

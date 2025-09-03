@@ -7,13 +7,7 @@ export async function GET() {
     await dbConnect();
 
     // Buscar todos os pedidos, populando os produtos
-    const orders = await Order.find()
-      .populate({
-        path: "products.productId",
-        select: "name imageUrl", // pega nome e imagem
-      })
-      .sort({ createdAt: -1 })
-      .lean();
+    const orders = await Order.find().sort({ createdAt: -1 }).lean();
 
     if (!orders || orders.length === 0) {
       return NextResponse.json(

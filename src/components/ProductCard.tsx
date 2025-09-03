@@ -2,14 +2,21 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/types/ProductTypes";
 import Button from "./ui/Button";
+import { useState } from "react";
+import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
 
 export default function ProductCard({
   product,
   onAdd,
 }: {
   product: Product;
-  onAdd: (product: Product) => void;
+  onAdd: (product: Product, qty: number) => void;
 }) {
+  const [qty, setQty] = useState(1);
+
+  const increaseQty = () => setQty((prev) => prev + 1);
+  const decreaseQty = () => setQty((prev) => (prev > 1 ? prev - 1 : 1));
+
   return (
     <div
       key={product._id}
@@ -35,9 +42,32 @@ export default function ProductCard({
           {product.description}
         </p>
         <p className="text-lg font-bold text-green-600">R$ {product.price}</p>
-        <div className="card-actions">
-          <Button variant="success" onClick={() => onAdd(product)}>
-            Adicionar ao Carrinho
+
+        <div className="card-actions flex items-center gap-3">
+          {/* Controle de quantidade */}
+          <div className="flex items-center gap-1 border rounded-lg px-2 py-1 h-full">
+            <Button
+              variant="ghost"
+              onClick={decreaseQty}
+              className="btn-xs"
+              aria-label="Diminuir"
+            >
+              <MinusIcon className="w-4 h-4 text-gray-600" />
+            </Button>
+            <span className="font-medium text-gray-800">{qty}</span>
+            <Button
+              variant="ghost"
+              onClick={increaseQty}
+              className="btn-xs"
+              aria-label="Aumentar"
+            >
+              <PlusIcon className="w-4 h-4 text-gray-600" />
+            </Button>
+          </div>
+
+          {/* Botão Doar */}
+          <Button variant="success" onClick={() => onAdd(product, qty)}>
+            Doar
           </Button>
         </div>
       </div>

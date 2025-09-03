@@ -3,6 +3,7 @@
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { LatLngExpression } from "leaflet";
 import L from "leaflet";
+import Button from "./ui/Button";
 
 interface MapModalProps {
   opened: boolean;
@@ -40,9 +41,9 @@ export default function MapModal({ opened, onClose, lat, lng }: MapModalProps) {
           </MapContainer>
         </div>
         <div className="modal-action">
-          <button className="btn" onClick={onClose}>
+          <Button variant="outline" onClick={onClose}>
             Fechar
-          </button>
+          </Button>
         </div>
       </div>
       <form method="dialog" className="modal-backdrop" onClick={onClose}>

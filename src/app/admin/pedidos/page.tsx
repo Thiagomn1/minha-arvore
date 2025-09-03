@@ -6,12 +6,10 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 
 interface ProductType {
-  productId: {
-    _id: string;
-    name: string;
-    imageUrl?: string;
-  };
-  quantity: number;
+  _id: string;
+  name: string;
+  imageUrl?: string;
+  qty: number;
 }
 
 interface OrderType {
@@ -36,10 +34,11 @@ export default function AdminOrdersPage() {
 
   useEffect(() => {
     async function fetchOrders() {
-      const res = await fetch("/api/admin/orders");
+      const res = await fetch("/api/admin/pedidos");
       const data = await res.json();
       setOrders(data);
       setLoading(false);
+      console.log(data);
     }
     fetchOrders();
   }, []);
@@ -167,8 +166,8 @@ export default function AdminOrdersPage() {
                       </td>
                       <td>
                         {o.products.map((p) => (
-                          <div key={p.productId._id}>
-                            {p.productId.name} x{p.quantity}
+                          <div key={p._id}>
+                            {p.name} x{p.qty}
                           </div>
                         ))}
                       </td>
@@ -244,8 +243,8 @@ export default function AdminOrdersPage() {
                   <p className="font-semibold">Produtos:</p>
                   <ul className="ml-2 mb-2">
                     {o.products.map((p) => (
-                      <li key={p.productId._id}>
-                        {p.productId.name} x{p.quantity}
+                      <li key={p._id}>
+                        {p.name} x{p.qty}
                       </li>
                     ))}
                   </ul>

@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getAddressFromCoords } from "@/lib/geocode";
 import MapModal from "@/components/MapModal"; // ajuste o caminho se necessário
+import Button from "@/components/ui/Button";
 
 interface Order {
   _id: string;
@@ -135,9 +136,9 @@ export default function UserOrdersPage() {
               </p>
 
               {order.status === "Plantado" && (
-                <button className="btn btn-primary mt-2">
+                <Button variant="primary" className="mt-2">
                   Ver foto da muda
-                </button>
+                </Button>
               )}
             </div>
           </div>

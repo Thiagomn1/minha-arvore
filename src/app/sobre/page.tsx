@@ -26,8 +26,8 @@ export default function Sobre() {
               reduzindo o impacto ambiental e promovendo um futuro mais
               sustentável para todos.
             </p>
-            <Link href="/catalogo">
-              <button className="btn btn-success">Conheça Nossas Mudas</button>
+            <Link href="/produtos">
+              <Button variant="success">Conheça Nossas Mudas</Button>
             </Link>
           </div>
         </div>

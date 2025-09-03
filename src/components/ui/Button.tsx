@@ -13,6 +13,7 @@ type ButtonVariant =
   | "error"
   | "ghost"
   | "link"
+  | "outline"
   | "neutral";
 
 interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {

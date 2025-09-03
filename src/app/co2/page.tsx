@@ -10,6 +10,7 @@ import {
   BeakerIcon,
   TruckIcon,
 } from "@heroicons/react/24/solid";
+import Button from "@/components/ui/Button";
 
 const fatores = {
   energiaEletrica: 0.000051, // ton CO2 / kWh (Brasil média aproximada)
@@ -175,10 +176,10 @@ export default function CO2() {
 
       {/* Botão Calcular */}
       <div className="flex flex-col items-center">
-        <button onClick={calcular} className="btn btn-success gap-2 px-6">
+        <Button variant="success" onClick={calcular} className="gap-2 px-6">
           <CalculatorIcon className="w-6 h-6" />
           Calcular Emissão
-        </button>
+        </Button>
 
         {/* Resultado */}
         {resultado && (

@@ -16,7 +16,7 @@ export default function Footer() {
         <Link href="/" className="link link-hover">
           Início
         </Link>
-        <Link href="/catalogo" className="link link-hover">
+        <Link href="/produtos" className="link link-hover">
           Catálogo
         </Link>
         <Link href="/sobre" className="link link-hover">
