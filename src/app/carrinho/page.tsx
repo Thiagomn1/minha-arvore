@@ -50,7 +50,7 @@ export default function CartPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           products: items.map((i) => ({
-            productId: i._id,
+            _id: i._id,
             qty: i.qty,
             imageUrl: i.image,
           })),

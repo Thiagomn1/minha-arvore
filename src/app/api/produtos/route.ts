@@ -18,7 +18,7 @@ export async function GET() {
       description: p.description,
       price: p.price,
       imageUrl: p.imageUrl,
-      category: p.category || "geral",
+      category: p.category || "Geral",
     })),
     categories,
   });

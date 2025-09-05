@@ -5,7 +5,6 @@ import { updateUser } from "@/lib/updateUser";
 
 export async function PUT(req: NextRequest) {
   try {
-    // pega a sessão do usuário logado
     const session = await getServerSession(authOptions);
     if (!session || !session.user?.id) {
       return NextResponse.json(
@@ -17,7 +16,6 @@ export async function PUT(req: NextRequest) {
     const body = await req.json();
     const { type, payload } = body;
 
-    // userId do usuário logado
     const userId = session.user.id;
     const updatedUser = await updateUser(userId, type, payload);
 
