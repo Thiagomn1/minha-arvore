@@ -23,3 +23,29 @@ export async function POST(req: Request) {
   const product = await Product.create(body);
   return NextResponse.json(product, { status: 201 });
 }
+
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  await dbConnect();
+
+  try {
+    const deleted = await Product.findByIdAndDelete(params.id);
+
+    if (!deleted) {
+      return NextResponse.json(
+        { message: "Produto não encontrado" },
+        { status: 404 }
+      );
+    }
+
+    return NextResponse.json({ message: "Produto deletado com sucesso" });
+  } catch (err) {
+    console.error(err);
+    return NextResponse.json(
+      { message: "Erro ao deletar produto" },
+      { status: 500 }
+    );
+  }
+}

@@ -105,7 +105,7 @@ export default function Login() {
 
               <p className="text-center text-sm mt-4">
                 Não tem conta?{" "}
-                <a href="/signup" className="link link-primary">
+                <a href="/registro" className="link link-primary">
                   Cadastre-se
                 </a>
               </p>

@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import Image from "next/image";
 
 interface ProductType {
   _id: string;
@@ -18,6 +19,10 @@ export default function AdminProductsPage() {
   const [products, setProducts] = useState<ProductType[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(
+    null
+  );
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
@@ -57,7 +62,6 @@ export default function AdminProductsPage() {
   async function handleAddProduct(e: React.FormEvent) {
     e.preventDefault();
 
-    // validação básica
     if (!newProduct.name || !newProduct.price) {
       showToast("Nome e preço são obrigatórios", "error");
       return;
@@ -90,9 +94,24 @@ export default function AdminProductsPage() {
     }
   }
 
+  async function handleDeleteProduct(id: string) {
+    if (!confirm("Tem certeza que deseja excluir este produto?")) return;
+
+    const res = await fetch(`/api/admin/produtos/${id}`, {
+      method: "DELETE",
+    });
+
+    if (res.ok) {
+      setProducts((prev) => prev.filter((p) => p._id !== id));
+      setShowDetailsModal(false);
+      showToast("Produto deletado!", "success");
+    } else {
+      showToast("Erro ao deletar produto", "error");
+    }
+  }
+
   return (
     <div className="min-h-screen bg-base-200 flex flex-col lg:flex-row">
-      {/* Container de toasts */}
       <div id="toast-container" className="toast toast-top toast-end"></div>
 
       {/* Menu lateral */}
@@ -141,7 +160,14 @@ export default function AdminProductsPage() {
               </thead>
               <tbody>
                 {products.map((p) => (
-                  <tr key={p._id}>
+                  <tr
+                    key={p._id}
+                    className="cursor-pointer hover:bg-base-300"
+                    onClick={() => {
+                      setSelectedProduct(p);
+                      setShowDetailsModal(true);
+                    }}
+                  >
                     <td>{p.name}</td>
                     <td>R$ {p.price.toFixed(2)}</td>
                     <td>{p.category}</td>
@@ -156,7 +182,11 @@ export default function AdminProductsPage() {
               {products.map((p) => (
                 <div
                   key={p._id}
-                  className="card bg-base-100 shadow-md p-4 space-y-1"
+                  className="card bg-base-100 shadow-md p-4 space-y-1 cursor-pointer"
+                  onClick={() => {
+                    setSelectedProduct(p);
+                    setShowDetailsModal(true);
+                  }}
                 >
                   <h2 className="font-bold text-lg">{p.name}</h2>
                   <p>
@@ -257,6 +287,50 @@ export default function AdminProductsPage() {
                 </Button>
               </div>
             </form>
+          </div>
+        </dialog>
+      )}
+
+      {/* Modal de detalhes do produto */}
+      {showDetailsModal && selectedProduct && (
+        <dialog open className="modal">
+          <div className="modal-box max-w-lg space-y-4">
+            <h3 className="font-bold text-lg">{selectedProduct.name}</h3>
+            {selectedProduct.imageUrl && (
+              <Image
+                src={selectedProduct.imageUrl}
+                alt={selectedProduct.name}
+                width={400}
+                height={300}
+                className="rounded-md object-cover w-full"
+              />
+            )}
+            <p>
+              <span className="font-semibold">Descrição:</span>{" "}
+              {selectedProduct.description || "Sem descrição"}
+            </p>
+            <p>
+              <span className="font-semibold">Preço:</span> R${" "}
+              {selectedProduct.price.toFixed(2)}
+            </p>
+            <p>
+              <span className="font-semibold">Categoria:</span>{" "}
+              {selectedProduct.category || "N/A"}
+            </p>
+            <p>
+              <span className="font-semibold">Status:</span>{" "}
+              {selectedProduct.status}
+            </p>
+
+            <div className="modal-action">
+              <Button
+                variant="error"
+                onClick={() => handleDeleteProduct(selectedProduct._id)}
+              >
+                Deletar
+              </Button>
+              <Button onClick={() => setShowDetailsModal(false)}>Fechar</Button>
+            </div>
           </div>
         </dialog>
       )}

@@ -10,6 +10,7 @@ export default async function ProductPage({
 }: {
   params: { id: string };
 }) {
+  const { id } = await params;
   await dbConnect();
 
   function toPlainProduct(doc: any): Product {
@@ -24,7 +25,7 @@ export default async function ProductPage({
     };
   }
 
-  const productDoc = await ProductModel.findById(params.id).lean();
+  const productDoc = await ProductModel.findById(id).lean();
   if (!productDoc) notFound();
 
   const product = toPlainProduct(productDoc);

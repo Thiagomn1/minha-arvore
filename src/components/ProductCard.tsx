@@ -43,7 +43,7 @@ export default function ProductCard({
         </p>
         <p className="text-lg font-bold text-green-600">R$ {product.price}</p>
 
-        <div className="card-actions flex items-center gap-3">
+        <div className="card-actions flex-nowrap flex items-center gap-3">
           {/* Controle de quantidade */}
           <div className="flex items-center gap-1 border rounded-lg px-2 py-1 h-full">
             <Button
