@@ -5,8 +5,8 @@ import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getAddressFromCoords } from "@/lib/geocode";
-import MapModal from "@/components/MapModal"; // ajuste o caminho se necessário
 import Button from "@/components/ui/Button";
+import dynamic from "next/dynamic";
 
 interface Order {
   _id: string;
@@ -19,7 +19,12 @@ interface Order {
     latitude: number;
     longitude: number;
   };
+  photoUrl?: string; // adicionamos o campo para guardar a foto da muda
 }
+
+const MapModal = dynamic(() => import("@/components/MapModal"), {
+  ssr: false,
+});
 
 export default function UserOrdersPage() {
   const params = useParams();
@@ -28,6 +33,7 @@ export default function UserOrdersPage() {
   const [loading, setLoading] = useState(true);
   const [addresses, setAddresses] = useState<Record<string, string>>({});
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
   useEffect(() => {
     if (!params?.id) return;
@@ -58,6 +64,21 @@ export default function UserOrdersPage() {
 
     fetchOrders();
   }, [params?.id]);
+
+  async function handleViewPhoto(orderId: string) {
+    try {
+      const res = await fetch(`/api/pedidos/${orderId}/foto`);
+      if (res.ok) {
+        const data = await res.json();
+        setSelectedPhoto(data.photoUrl);
+      } else {
+        alert("Foto não encontrada");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Erro ao carregar foto");
+    }
+  }
 
   if (loading) return <p className="p-4">Carregando pedidos...</p>;
   if (message)
@@ -136,7 +157,11 @@ export default function UserOrdersPage() {
               </p>
 
               {order.status === "Plantado" && (
-                <Button variant="primary" className="mt-2">
+                <Button
+                  variant="primary"
+                  className="mt-2"
+                  onClick={() => handleViewPhoto(order._id)}
+                >
                   Ver foto da muda
                 </Button>
               )}
@@ -145,7 +170,7 @@ export default function UserOrdersPage() {
         ))}
       </div>
 
-      {/* Modal do MapModal */}
+      {/* Modal do mapa */}
       {selectedOrder && (
         <MapModal
           opened={!!selectedOrder}
@@ -153,6 +178,25 @@ export default function UserOrdersPage() {
           lat={selectedOrder.location.latitude}
           lng={selectedOrder.location.longitude}
         />
+      )}
+
+      {/* Modal da foto da muda */}
+      {selectedPhoto && (
+        <dialog open className="modal">
+          <div className="modal-box max-w-lg">
+            <h3 className="font-bold text-lg mb-2">Foto da Muda</h3>
+            <Image
+              src={selectedPhoto}
+              alt="Foto da muda"
+              width={600}
+              height={400}
+              className="rounded-md object-cover w-full"
+            />
+            <div className="modal-action">
+              <Button onClick={() => setSelectedPhoto(null)}>Fechar</Button>
+            </div>
+          </div>
+        </dialog>
       )}
     </div>
   );

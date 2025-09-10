@@ -8,7 +8,7 @@ export async function PUT(
 ) {
   try {
     await dbConnect();
-    const { id } = params;
+    const { id } = await params;
 
     const formData = await req.formData();
     const file = formData.get("mudaImage") as File;
