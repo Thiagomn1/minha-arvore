@@ -44,29 +44,34 @@ export default function ProductCard({
         <p className="text-lg font-bold text-green-600">R$ {product.price}</p>
 
         <div className="card-actions flex-nowrap flex items-center gap-3">
-          {/* Controle de quantidade */}
-          <div className="flex items-center gap-1 border rounded-lg px-2 py-1 h-full">
-            <Button
-              variant="ghost"
-              onClick={decreaseQty}
-              className="btn-xs"
-              aria-label="Diminuir"
-            >
-              <MinusIcon className="w-4 h-4 text-gray-600" />
-            </Button>
-            <span className="font-medium text-gray-800">{qty}</span>
-            <Button
-              variant="ghost"
-              onClick={increaseQty}
-              className="btn-xs"
-              aria-label="Aumentar"
-            >
-              <PlusIcon className="w-4 h-4 text-gray-600" />
-            </Button>
-          </div>
+          {product.status === "Disponível" && (
+            <div className="flex items-center gap-1 border rounded-lg px-2 py-1 h-full">
+              <Button
+                variant="ghost"
+                onClick={decreaseQty}
+                className="btn-xs"
+                aria-label="Diminuir"
+              >
+                <MinusIcon className="w-4 h-4 text-gray-600" />
+              </Button>
+              <span className="font-medium text-gray-800">{qty}</span>
+              <Button
+                variant="ghost"
+                onClick={increaseQty}
+                className="btn-xs"
+                aria-label="Aumentar"
+              >
+                <PlusIcon className="w-4 h-4 text-gray-600" />
+              </Button>
+            </div>
+          )}
 
           {/* Botão Doar */}
-          <Button variant="success" onClick={() => onAdd(product, qty)}>
+          <Button
+            disabled={product.status === "Indisponível"}
+            variant="success"
+            onClick={() => onAdd(product, qty)}
+          >
             Doar
           </Button>
         </div>

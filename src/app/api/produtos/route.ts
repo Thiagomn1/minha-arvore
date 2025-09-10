@@ -11,6 +11,8 @@ export async function GET() {
     new Set(products.map((p) => p.category || "geral"))
   ).map((c, index) => ({ id: index.toString(), name: c }));
 
+  console.log(products);
+
   return NextResponse.json({
     products: products.map((p) => ({
       _id: p._id.toString(),
@@ -19,6 +21,7 @@ export async function GET() {
       price: p.price,
       imageUrl: p.imageUrl,
       category: p.category || "Geral",
+      status: p.status,
     })),
     categories,
   });

@@ -94,6 +94,36 @@ export default function AdminProductsPage() {
     }
   }
 
+  async function handleUpdateStatus(productId: string, newStatus: string) {
+    try {
+      const res = await fetch(`/api/admin/produtos/${productId}/status`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ status: newStatus }),
+      });
+
+      if (!res.ok) {
+        showToast("Erro ao atualizar status", "error");
+        return;
+      }
+
+      // Atualiza lista de produtos
+      setProducts((prev) =>
+        prev.map((p) => (p._id === productId ? { ...p, status: newStatus } : p))
+      );
+
+      // Atualiza produto selecionado no modal
+      setSelectedProduct((prev) =>
+        prev ? { ...prev, status: newStatus } : prev
+      );
+
+      showToast("Status atualizado!", "success");
+    } catch (err) {
+      console.error(err);
+      showToast("Erro inesperado ao atualizar status", "error");
+    }
+  }
+
   async function handleDeleteProduct(id: string) {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
 
@@ -135,7 +165,6 @@ export default function AdminProductsPage() {
         </ul>
       </aside>
 
-      {/* Conteúdo principal */}
       <main className="flex-1 p-4 lg:p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
           <h1 className="text-xl sm:text-2xl font-bold">Gerenciar Produtos</h1>
@@ -148,7 +177,6 @@ export default function AdminProductsPage() {
           <p className="text-center text-gray-500">Carregando produtos...</p>
         ) : (
           <div className="overflow-x-auto">
-            {/* Tabela */}
             <table className="table-zebra hidden md:table w-full">
               <thead>
                 <tr>
@@ -177,7 +205,6 @@ export default function AdminProductsPage() {
               </tbody>
             </table>
 
-            {/* Cards em telas pequenas */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:hidden">
               {products.map((p) => (
                 <div
@@ -207,7 +234,6 @@ export default function AdminProductsPage() {
         )}
       </main>
 
-      {/* Modal de adicionar produto */}
       {showModal && (
         <dialog open className="modal">
           <div className="modal-box max-w-md">
@@ -291,7 +317,6 @@ export default function AdminProductsPage() {
         </dialog>
       )}
 
-      {/* Modal de detalhes do produto */}
       {showDetailsModal && selectedProduct && (
         <dialog open className="modal">
           <div className="modal-box max-w-lg space-y-4">
@@ -317,10 +342,23 @@ export default function AdminProductsPage() {
               <span className="font-semibold">Categoria:</span>{" "}
               {selectedProduct.category || "N/A"}
             </p>
-            <p>
-              <span className="font-semibold">Status:</span>{" "}
-              {selectedProduct.status}
-            </p>
+
+            {/* 🔹 Toggle de Status */}
+            <div className="flex items-center gap-3">
+              <span className="font-semibold">Status:</span>
+              <input
+                type="checkbox"
+                className="toggle toggle-primary"
+                checked={selectedProduct.status === "Disponível"}
+                onChange={(e) =>
+                  handleUpdateStatus(
+                    selectedProduct._id,
+                    e.target.checked ? "Disponível" : "Indisponível"
+                  )
+                }
+              />
+              <span>{selectedProduct.status}</span>
+            </div>
 
             <div className="modal-action">
               <Button

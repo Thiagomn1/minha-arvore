@@ -69,7 +69,7 @@ export default function AdminOrdersPage() {
 
     try {
       const res = await fetch(
-        `/api/admin/orders/${selectedOrder._id}/upload-image`,
+        `/api/admin/pedidos/${selectedOrder._id}/upload-image`,
         {
           method: "PUT",
           body: formData,
@@ -192,17 +192,31 @@ export default function AdminOrdersPage() {
                           "-"
                         )}
                       </td>
-                      <td className="flex flex-col gap-2">
-                        <Button
-                          variant="primary"
-                          onClick={() => {
-                            setSelectedOrder(o);
-                            setShowModal(true);
-                          }}
-                        >
-                          Enviar Foto
-                        </Button>
-                      </td>
+                      {o.mudaImage ? (
+                        <td className="flex flex-col gap-2 ">
+                          <Button
+                            variant="primary"
+                            onClick={() => {
+                              setSelectedOrder(o);
+                              setShowModal(true);
+                            }}
+                          >
+                            Atualizar Foto
+                          </Button>
+                        </td>
+                      ) : (
+                        <td className="flex flex-col gap-2">
+                          <Button
+                            variant="primary"
+                            onClick={() => {
+                              setSelectedOrder(o);
+                              setShowModal(true);
+                            }}
+                          >
+                            Enviar Foto
+                          </Button>
+                        </td>
+                      )}
                     </tr>
                   ))}
                 </tbody>
@@ -269,7 +283,6 @@ export default function AdminOrdersPage() {
           </>
         )}
 
-        {/* Modal upload */}
         {showModal && selectedOrder && (
           <dialog open className="modal">
             <div className="modal-box max-w-md">
