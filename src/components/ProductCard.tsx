@@ -66,7 +66,6 @@ export default function ProductCard({
             </div>
           )}
 
-          {/* Botão Doar */}
           <Button
             disabled={product.status === "Indisponível"}
             variant="success"

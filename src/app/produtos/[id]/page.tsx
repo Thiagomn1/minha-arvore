@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import dbConnect from "@/lib/mongoose";
 import ProductModel from "@/models/Product";
 import { Product } from "@/types/ProductTypes";
-import AddToCartButton from "@/components/ui/AddToCartButton";
+import QuantitySelector from "@/components/ui/QuantitySelector";
 
 export default async function ProductPage({
   params,
@@ -49,7 +49,7 @@ export default async function ProductPage({
             R$ {product.price}
           </p>
 
-          <AddToCartButton product={product} />
+          <QuantitySelector product={product} />
 
           <div className="divider"></div>
 
