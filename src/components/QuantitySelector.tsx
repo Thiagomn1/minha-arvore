@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
-import Button from "./Button";
+import Button from "./ui/Button";
 import { Product } from "@/types/ProductTypes";
 import AddToCartButton from "./AddToCartButton";
 

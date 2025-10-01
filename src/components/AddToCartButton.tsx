@@ -1,6 +1,6 @@
 "use client";
 import { Product } from "@/types/ProductTypes";
-import Button from "./Button";
+import Button from "./ui/Button";
 import { useCart } from "@/context/useCart";
 
 export default function AddToCartButton({

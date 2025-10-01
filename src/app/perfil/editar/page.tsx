@@ -58,7 +58,7 @@ export default function EditarPerfilPage() {
     }
 
     try {
-      const res = await fetch("/api/user", {
+      const res = await fetch("/api/usuario", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ type: menu, payload }),

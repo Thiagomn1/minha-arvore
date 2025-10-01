@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import dbConnect from "@/lib/mongoose";
 import ProductModel from "@/models/Product";
 import { Product } from "@/types/ProductTypes";
-import QuantitySelector from "@/components/ui/QuantitySelector";
+import QuantitySelector from "@/components/QuantitySelector";
 
 export default async function ProductPage({
   params,
