@@ -83,6 +83,19 @@ export default function Register() {
     }));
   };
 
+  const validatePassword = (password: string): string | null => {
+    if (password.length < 6) return "A senha deve ter no mínimo 6 caracteres";
+    if (!/[A-Z]/.test(password))
+      return "A senha deve conter pelo menos uma letra maiúscula";
+    if (!/[a-z]/.test(password))
+      return "A senha deve conter pelo menos uma letra minúscula";
+    if (!/[0-9]/.test(password))
+      return "A senha deve conter pelo menos um número";
+    if (!/[!@#$%^&*(),.?\":{}|<>]/.test(password))
+      return "A senha deve conter pelo menos um caractere especial";
+    return null;
+  };
+
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setErrorMsg("");
@@ -108,6 +121,12 @@ export default function Register() {
 
     if (!isEmailValid(email)) {
       setFieldErrors((s) => ({ ...s, email: "Email inválido" }));
+      return;
+    }
+
+    const passwordError = validatePassword(password);
+    if (passwordError) {
+      setFieldErrors((s) => ({ ...s, passwordMatch: passwordError }));
       return;
     }
 

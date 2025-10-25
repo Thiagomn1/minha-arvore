@@ -24,7 +24,6 @@ export default function Login() {
     });
 
     if (result?.error) {
-      console.log(result?.error);
       setErrorMsg("Email ou senha inválidos");
     } else {
       setShowToast(true);

@@ -38,7 +38,6 @@ export default function AdminOrdersPage() {
       const data = await res.json();
       setOrders(data);
       setLoading(false);
-      console.log(data);
     }
     fetchOrders();
   }, []);

@@ -15,7 +15,23 @@ const UserSchema = new mongoose.Schema({
     estado: String,
     cep: String,
   },
-  password: { type: String, required: true },
+  password: {
+    type: String,
+    required: true,
+    validate: {
+      validator: function (value: string) {
+        return (
+          value.length >= 6 &&
+          /[A-Z]/.test(value) &&
+          /[a-z]/.test(value) &&
+          /[0-9]/.test(value) &&
+          /[!@#$%^&*(),.?\":{}|<>]/.test(value)
+        );
+      },
+      message:
+        "A senha deve ter pelo menos 6 caracteres, com letras maiúsculas, minúsculas, números e um caractere especial.",
+    },
+  },
   consentimentoLGPD: { type: Boolean, required: true },
   role: { type: String, enum: ["User", "Admin"], default: "User" },
 });
