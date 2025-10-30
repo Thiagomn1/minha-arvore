@@ -9,7 +9,7 @@ export default function Hero() {
     <>
       <section className="relative h-screen w-full">
         <Image
-          src="/naturebg.webp"
+          src="/naturebg.jpg"
           alt="Hero background"
           fill
           className="object-cover"
@@ -24,7 +24,7 @@ export default function Hero() {
                 Plante o <span className="text-green-400">futuro,</span> um
                 passo por vez
               </h1>
-              <p className="mt-8 text-base font-normal leading-7 text-gray-300 xl:pr-0 lg:px-8">
+              <p className="mt-8 mx-auto max-w-lg text-base font-normal leading-7 text-white bg-white/10 backdrop-blur-xs rounded-xl p-6 shadow-lg">
                 Cada pessoa gera, em média, 4,5 toneladas de CO₂ por ano — mas
                 você pode ajudar a compensar esse impacto. Compre mudas e
                 escolha o local onde elas serão plantadas para ajudar a
