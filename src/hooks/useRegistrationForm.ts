@@ -6,6 +6,7 @@ import { validateCPF } from "@/lib/utils/cpfValidator";
 import { validateCNPJ } from "@/lib/utils/cnpjValidator";
 import { removeFormatting } from "@/lib/utils/formatters";
 import { validatePassword } from "@/lib/validations/password";
+import { useRegister } from "./useAuth";
 import type { Address } from "@/components/registro/AddressSection";
 
 interface FieldErrors {
@@ -57,10 +58,10 @@ const INITIAL_FORM_DATA: FormData = {
  */
 export function useRegistrationForm() {
   const router = useRouter();
+  const registerMutation = useRegister();
   const [formData, setFormData] = useState<FormData>(INITIAL_FORM_DATA);
   const [errorMsg, setErrorMsg] = useState<string>("");
   const [fieldErrors, setFieldErrors] = useState<FieldErrors>({});
-  const [loading, setLoading] = useState<boolean>(false);
   const [showToast, setShowToast] = useState<boolean>(false);
 
   const isEmailValid = (value: string) => /\S+@\S+\.\S+/.test(value);
@@ -130,29 +131,18 @@ export function useRegistrationForm() {
 
     if (!validateForm()) return;
 
-    setLoading(true);
     try {
-      const res = await fetch("/api/auth/registro", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          name: formData.name,
-          tipoPessoa: formData.tipoPessoa,
-          cpf: formData.tipoPessoa === "PF" ? removeFormatting(formData.cpf) : undefined,
-          cnpj: formData.tipoPessoa === "PJ" ? removeFormatting(formData.cnpj) : undefined,
-          email: formData.email,
-          telefone: removeFormatting(formData.telefone),
-          endereco: formData.endereco,
-          password: formData.password,
-          consentimentoLGPD: formData.consentimentoLGPD,
-        }),
+      await registerMutation.mutateAsync({
+        name: formData.name,
+        tipoPessoa: formData.tipoPessoa as "PF" | "PJ",
+        cpf: formData.tipoPessoa === "PF" ? removeFormatting(formData.cpf) : undefined,
+        cnpj: formData.tipoPessoa === "PJ" ? removeFormatting(formData.cnpj) : undefined,
+        email: formData.email,
+        telefone: removeFormatting(formData.telefone),
+        endereco: formData.endereco,
+        password: formData.password,
+        consentimentoLGPD: formData.consentimentoLGPD,
       });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.message || "Erro ao criar conta");
-      }
 
       setShowToast(true);
       resetForm();
@@ -160,8 +150,6 @@ export function useRegistrationForm() {
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       setErrorMsg(message);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -169,7 +157,7 @@ export function useRegistrationForm() {
     formData,
     errorMsg,
     fieldErrors,
-    loading,
+    loading: registerMutation.isPending,
     showToast,
     updateField,
     updateEndereco,

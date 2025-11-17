@@ -111,8 +111,17 @@ export function useUploadOrderImage() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, imageUrl }: { id: string; imageUrl: string }) => {
-      return apiClient.post(`/admin/pedidos/${id}/upload-image`, { imageUrl });
+    mutationFn: async ({ id, formData }: { id: string; formData: FormData }) => {
+      const response = await fetch(`/api/admin/pedidos/${id}/upload-image`, {
+        method: "PUT",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("Erro ao enviar imagem");
+      }
+
+      return response.json();
     },
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });

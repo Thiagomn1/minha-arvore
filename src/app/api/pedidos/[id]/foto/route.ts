@@ -4,7 +4,7 @@ import Order from "@/models/Order";
 
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params;
   await dbConnect();

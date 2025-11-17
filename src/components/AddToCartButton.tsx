@@ -13,11 +13,8 @@ export default function AddToCartButton({
   const add = useCart((state) => state.add); // exemplo usando Zustand
   const onAdd = () => {
     add({
-      _id: product._id,
-      name: product.name,
-      price: product.price,
+      ...product,
       qty: quantity || 1,
-      image: product.imageUrl,
     });
   };
 

@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export interface ICidade {
   nome: string;
@@ -11,21 +11,19 @@ interface UseCidadesProps {
 }
 
 export const useCidades = ({ uf }: UseCidadesProps) => {
-  const [cidades, setCidades] = useState<ICidade[]>([]);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    if (!uf) return;
-
-    setLoading(true);
-    fetch(`https://brasilapi.com.br/api/ibge/municipios/v1/${uf}`)
-      .then((response) => response.json())
-      .then((data: ICidade[]) => setCidades(data))
-      .finally(() => setLoading(false)); // 👈 melhor usar finally
-  }, [uf]);
+  const { data, isLoading } = useQuery({
+    queryKey: ["cidades", uf],
+    queryFn: async () => {
+      const response = await fetch(`https://brasilapi.com.br/api/ibge/municipios/v1/${uf}`);
+      if (!response.ok) throw new Error("Erro ao buscar cidades");
+      return response.json() as Promise<ICidade[]>;
+    },
+    enabled: !!uf,
+    staleTime: 1000 * 60 * 60 * 24, // 24 horas - dados IBGE são estáticos
+  });
 
   return {
-    cidades,
-    loading,
+    cidades: data || [],
+    loading: isLoading,
   };
 };

@@ -4,11 +4,10 @@ import User from "@/models/User";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 
-interface Params {
-  params: { id: string };
-}
-
-export async function PUT(req: Request, { params }: Params) {
+export async function PUT(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
   try {
     await dbConnect();
 
@@ -18,7 +17,8 @@ export async function PUT(req: Request, { params }: Params) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    const user = await User.findById(params.id);
+    const { id } = await params;
+    const user = await User.findById(id);
     if (!user) {
       return NextResponse.json(
         { error: "Usuário não encontrado" },

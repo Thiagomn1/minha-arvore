@@ -6,10 +6,11 @@ import Input from "@/components/ui/Input";
 import { SelectEstado } from "@/components/ui/SelectEstado";
 import { SelectCidade } from "@/components/ui/SelectCidade";
 import { useToast } from "@/hooks/useToast";
+import { useUpdateUser } from "@/hooks/useUsers";
 
 export default function EditarPerfilPage() {
   const [menu, setMenu] = useState<"dados" | "endereco" | "senha">("dados");
-  const [loading, setLoading] = useState(false);
+  const updateUserMutation = useUpdateUser();
 
   // Dados pessoais
   const [nome, setNome] = useState("");
@@ -32,7 +33,6 @@ export default function EditarPerfilPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setLoading(true);
 
     let payload = {};
     if (menu === "dados") payload = { nome, email };
@@ -41,28 +41,17 @@ export default function EditarPerfilPage() {
     else if (menu === "senha") {
       if (novaSenha !== confirmNovaSenha) {
         showToast("As senhas não coincidem", "error");
-        setLoading(false);
         return;
       }
       payload = { senhaAtual, novaSenha };
     }
 
     try {
-      const res = await fetch("/api/usuario", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ type: menu, payload }),
-      });
-
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.message || "Erro ao atualizar");
-
+      await updateUserMutation.mutateAsync({ type: menu, payload });
       showToast("Atualizado com sucesso!", "success");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Erro desconhecido";
       showToast(message, "error");
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -135,8 +124,8 @@ export default function EditarPerfilPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <Button type="submit" variant="success" disabled={loading}>
-              {loading ? "Salvando..." : "Salvar"}
+            <Button type="submit" variant="success" disabled={updateUserMutation.isPending}>
+              {updateUserMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
           </form>
         )}
@@ -180,8 +169,8 @@ export default function EditarPerfilPage() {
               value={cep}
               onChange={(e) => setCep(e.target.value)}
             />
-            <Button type="submit" variant="success" disabled={loading}>
-              {loading ? "Salvando..." : "Salvar"}
+            <Button type="submit" variant="success" disabled={updateUserMutation.isPending}>
+              {updateUserMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
           </form>
         )}
@@ -206,8 +195,8 @@ export default function EditarPerfilPage() {
               value={confirmNovaSenha}
               onChange={(e) => setConfirmNovaSenha(e.target.value)}
             />
-            <Button type="submit" variant="success" disabled={loading}>
-              {loading ? "Salvando..." : "Alterar Senha"}
+            <Button type="submit" variant="success" disabled={updateUserMutation.isPending}>
+              {updateUserMutation.isPending ? "Salvando..." : "Alterar Senha"}
             </Button>
           </form>
         )}

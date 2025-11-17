@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 
 export default function Error({
@@ -21,7 +22,8 @@ export default function Error({
             Ops! Algo deu errado
           </h2>
           <p className="text-gray-600 mb-6">
-            {error.message || "Ocorreu um erro inesperado. Por favor, tente novamente."}
+            {error.message ||
+              "Ocorreu um erro inesperado. Por favor, tente novamente."}
           </p>
           <div className="flex gap-4 justify-center">
             <button
@@ -30,12 +32,12 @@ export default function Error({
             >
               Tentar novamente
             </button>
-            <a
+            <Link
               href="/"
               className="bg-gray-200 text-gray-700 px-6 py-2 rounded-md hover:bg-gray-300 transition"
             >
               Voltar ao início
-            </a>
+            </Link>
           </div>
         </div>
       </div>

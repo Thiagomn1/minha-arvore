@@ -1,29 +1,32 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import AdminLayout from "@/components/layouts/AdminLayout";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import Modal from "@/components/ui/Modal";
+import StatusBadge from "@/components/ui/StatusBadge";
+import ResponsiveGrid from "@/components/ui/ResponsiveGrid";
 import Image from "next/image";
 import { useToast } from "@/hooks/useToast";
-
-interface ProductType {
-  _id: string;
-  name: string;
-  description?: string;
-  price: number;
-  imageUrl?: string;
-  category?: string;
-  status?: string;
-}
+import {
+  useAdminProducts,
+  useCreateProduct,
+  useDeleteProduct,
+  useUpdateProductStatus,
+} from "@/hooks/useProducts";
+import type { Product } from "@/types";
 
 export default function AdminProductsPage() {
-  const [products, setProducts] = useState<ProductType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useAdminProducts();
+  const createProductMutation = useCreateProduct();
+  const deleteProductMutation = useDeleteProduct();
+  const updateStatusMutation = useUpdateProductStatus();
+
   const [showModal, setShowModal] = useState(false);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
-  const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(
-    null
-  );
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState({
     name: "",
     description: "",
@@ -34,15 +37,7 @@ export default function AdminProductsPage() {
   });
   const { showToast } = useToast();
 
-  useEffect(() => {
-    async function fetchProducts() {
-      const res = await fetch("/api/admin/produtos");
-      const data = await res.json();
-      setProducts(data);
-      setLoading(false);
-    }
-    fetchProducts();
-  }, []);
+  const products = data?.products || [];
 
   async function handleAddProduct(e: React.FormEvent) {
     e.preventDefault();
@@ -52,18 +47,16 @@ export default function AdminProductsPage() {
       return;
     }
 
-    const res = await fetch("/api/admin/produtos", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        ...newProduct,
+    try {
+      await createProductMutation.mutateAsync({
+        name: newProduct.name,
+        description: newProduct.description,
         price: parseFloat(newProduct.price),
-      }),
-    });
+        imageUrl: newProduct.imageUrl,
+        category: newProduct.category,
+        status: newProduct.status as any,
+      });
 
-    if (res.ok) {
-      const produtoCriado = await res.json();
-      setProducts((prev) => [...prev, produtoCriado]);
       setShowModal(false);
       setNewProduct({
         name: "",
@@ -74,32 +67,22 @@ export default function AdminProductsPage() {
         status: "Disponível",
       });
       showToast("Produto adicionado!", "success");
-    } else {
+    } catch (error) {
+      console.error(error);
       showToast("Erro ao adicionar produto", "error");
     }
   }
 
   async function handleUpdateStatus(productId: string, newStatus: string) {
     try {
-      const res = await fetch(`/api/admin/produtos/${productId}/status`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ status: newStatus }),
+      await updateStatusMutation.mutateAsync({
+        id: productId,
+        status: newStatus,
       });
 
-      if (!res.ok) {
-        showToast("Erro ao atualizar status", "error");
-        return;
-      }
-
-      // Atualiza lista de produtos
-      setProducts((prev) =>
-        prev.map((p) => (p._id === productId ? { ...p, status: newStatus } : p))
-      );
-
-      // Atualiza produto selecionado no modal
+      // Atualiza produto selecionado no modal localmente
       setSelectedProduct((prev) =>
-        prev ? { ...prev, status: newStatus } : prev
+        prev ? { ...prev, status: newStatus as any } : prev
       );
 
       showToast("Status atualizado!", "success");
@@ -112,45 +95,18 @@ export default function AdminProductsPage() {
   async function handleDeleteProduct(id: string) {
     if (!confirm("Tem certeza que deseja excluir este produto?")) return;
 
-    const res = await fetch(`/api/admin/produtos/${id}`, {
-      method: "DELETE",
-    });
-
-    if (res.ok) {
-      setProducts((prev) => prev.filter((p) => p._id !== id));
+    try {
+      await deleteProductMutation.mutateAsync(id);
       setShowDetailsModal(false);
       showToast("Produto deletado!", "success");
-    } else {
+    } catch {
       showToast("Erro ao deletar produto", "error");
     }
   }
 
   return (
-    <div className="min-h-screen bg-base-200 flex flex-col lg:flex-row">
+    <AdminLayout>
       <div id="toast-container" className="toast toast-top toast-end" />
-
-      {/* Menu lateral */}
-      <aside className="bg-base-100 shadow-md p-4 w-full lg:w-64">
-        <h2 className="text-xl font-bold mb-4 lg:mb-6 text-center lg:text-left">
-          Admin
-        </h2>
-        <ul className="menu menu-horizontal lg:menu-vertical flex justify-center lg:block">
-          <li>
-            <a href="/admin/">Home</a>
-          </li>
-          <li>
-            <a href="/admin/pedidos">Pedidos</a>
-          </li>
-          <li>
-            <a href="/admin/usuarios">Usuários</a>
-          </li>
-          <li className="font-semibold">
-            <a className="active">Produtos</a>
-          </li>
-        </ul>
-      </aside>
-
-      <main className="flex-1 p-4 lg:p-6">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
           <h1 className="text-xl sm:text-2xl font-bold">Gerenciar Produtos</h1>
           <Button variant="primary" onClick={() => setShowModal(true)}>
@@ -158,7 +114,7 @@ export default function AdminProductsPage() {
           </Button>
         </div>
 
-        {loading ? (
+        {isLoading ? (
           <p className="text-center text-gray-500">Carregando produtos...</p>
         ) : (
           <div className="overflow-x-auto">
@@ -184,17 +140,21 @@ export default function AdminProductsPage() {
                     <td>{p.name}</td>
                     <td>R$ {p.price.toFixed(2)}</td>
                     <td>{p.category}</td>
-                    <td>{p.status}</td>
+                    <td>
+                      <StatusBadge status={p.status} variant="product" />
+                    </td>
                   </tr>
                 ))}
               </tbody>
             </table>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:hidden">
+            <ResponsiveGrid cols={2} gap={4} className="md:hidden">
               {products.map((p) => (
-                <div
+                <Card
                   key={p._id}
-                  className="card bg-base-100 shadow-md p-4 space-y-1 cursor-pointer"
+                  variant="admin"
+                  padding="md"
+                  className="space-y-1"
                   onClick={() => {
                     setSelectedProduct(p);
                     setShowDetailsModal(true);
@@ -210,20 +170,24 @@ export default function AdminProductsPage() {
                     {p.category}
                   </p>
                   <p>
-                    <span className="font-semibold">Status:</span> {p.status}
+                    <span className="font-semibold">Status:</span>{" "}
+                    <StatusBadge status={p.status} variant="product" />
                   </p>
-                </div>
+                </Card>
               ))}
-            </div>
+            </ResponsiveGrid>
           </div>
         )}
-      </main>
 
       {showModal && (
-        <dialog open className="modal">
-          <div className="modal-box max-w-md">
-            <h3 className="font-bold text-lg">Novo Produto</h3>
-            <form className="space-y-3" onSubmit={handleAddProduct}>
+        <Modal
+          isOpen={showModal}
+          onClose={() => setShowModal(false)}
+          title="Novo Produto"
+          size="sm"
+          actions={null}
+        >
+          <form className="space-y-3" onSubmit={handleAddProduct}>
               <Input
                 label="Nome"
                 type="text"
@@ -298,14 +262,28 @@ export default function AdminProductsPage() {
                 </Button>
               </div>
             </form>
-          </div>
-        </dialog>
+          </Modal>
       )}
 
       {showDetailsModal && selectedProduct && (
-        <dialog open className="modal">
-          <div className="modal-box max-w-lg space-y-4">
-            <h3 className="font-bold text-lg">{selectedProduct.name}</h3>
+        <Modal
+          isOpen={showDetailsModal}
+          onClose={() => setShowDetailsModal(false)}
+          title={selectedProduct.name}
+          size="md"
+          actions={
+            <>
+              <Button
+                variant="error"
+                onClick={() => handleDeleteProduct(selectedProduct._id)}
+              >
+                Deletar
+              </Button>
+              <Button onClick={() => setShowDetailsModal(false)}>Fechar</Button>
+            </>
+          }
+        >
+          <div className="space-y-4">
             {selectedProduct.imageUrl && (
               <Image
                 src={selectedProduct.imageUrl}
@@ -328,7 +306,7 @@ export default function AdminProductsPage() {
               {selectedProduct.category || "N/A"}
             </p>
 
-            {/* 🔹 Toggle de Status */}
+            {/* Toggle de Status */}
             <div className="flex items-center gap-3">
               <span className="font-semibold">Status:</span>
               <input
@@ -344,19 +322,9 @@ export default function AdminProductsPage() {
               />
               <span>{selectedProduct.status}</span>
             </div>
-
-            <div className="modal-action">
-              <Button
-                variant="error"
-                onClick={() => handleDeleteProduct(selectedProduct._id)}
-              >
-                Deletar
-              </Button>
-              <Button onClick={() => setShowDetailsModal(false)}>Fechar</Button>
-            </div>
           </div>
-        </dialog>
+        </Modal>
       )}
-    </div>
+    </AdminLayout>
   );
 }

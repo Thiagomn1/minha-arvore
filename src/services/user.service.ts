@@ -119,7 +119,7 @@ export class UserService {
     user.endereco = {
       ...user.endereco.toObject(),
       ...Object.fromEntries(
-        Object.entries(endereco).filter(([_, value]) => value && value.trim() !== "")
+        Object.entries(endereco).filter(([, value]) => value && value.trim() !== "")
       ),
     };
 

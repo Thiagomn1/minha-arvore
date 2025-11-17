@@ -1,5 +1,5 @@
 "use client";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 export interface Regiao {
   id: number;
@@ -15,15 +15,17 @@ export interface IEstado {
 }
 
 export const useEstados = () => {
-  const [estados, setEstados] = useState<IEstado[]>([]);
-
-  useEffect(() => {
-    fetch("https://brasilapi.com.br/api/ibge/uf/v1")
-      .then((response) => response.json())
-      .then((data) => setEstados(data));
-  }, []);
+  const { data } = useQuery({
+    queryKey: ["estados"],
+    queryFn: async () => {
+      const response = await fetch("https://brasilapi.com.br/api/ibge/uf/v1");
+      if (!response.ok) throw new Error("Erro ao buscar estados");
+      return response.json() as Promise<IEstado[]>;
+    },
+    staleTime: 1000 * 60 * 60 * 24, // 24 horas - dados IBGE são estáticos
+  });
 
   return {
-    estados,
+    estados: data || [],
   };
 };

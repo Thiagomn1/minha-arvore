@@ -26,16 +26,23 @@ export default function UserOrdersPage() {
 
   useEffect(() => {
     // Buscar endereços aproximados para cada pedido
-    orders.forEach(async (order) => {
-      if (order.location) {
-        const addr = await getAddressFromCoords(
-          order.location.latitude,
-          order.location.longitude
-        );
-        setAddresses((prev) => ({ ...prev, [order._id]: addr }));
+    const fetchAddresses = async () => {
+      for (const order of orders) {
+        if (order.location && !addresses[order._id]) {
+          const addr = await getAddressFromCoords(
+            order.location.latitude,
+            order.location.longitude
+          );
+          setAddresses((prev) => ({ ...prev, [order._id]: addr }));
+        }
       }
-    });
-  }, [orders]);
+    };
+
+    if (orders.length > 0) {
+      fetchAddresses();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [orders.length]);
 
   async function handleViewPhoto(orderId: string) {
     try {

@@ -1,93 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import AdminLayout from "@/components/layouts/AdminLayout";
 import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import Modal from "@/components/ui/Modal";
+import StatusBadge from "@/components/ui/StatusBadge";
+import ResponsiveGrid from "@/components/ui/ResponsiveGrid";
 import { useToast } from "@/hooks/useToast";
-
-interface Endereco {
-  rua?: string;
-  numero?: string;
-  bairro?: string;
-  cidade?: string;
-  estado?: string;
-  cep?: string;
-}
-
-interface UserType {
-  _id: string;
-  name: string;
-  email: string;
-  cpf?: string;
-  cnpj?: string;
-  telefone?: string;
-  tipoPessoa?: "PF" | "PJ";
-  endereco?: Endereco;
-  role: "User" | "Admin";
-}
+import { useAdminUsers, usePromoteUser } from "@/hooks/useUsers";
+import type { User } from "@/types";
 
 export default function AdminUsersPage() {
-  const [users, setUsers] = useState<UserType[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+  const { data, isLoading } = useAdminUsers();
+  const promoteUserMutation = usePromoteUser();
+  const [selectedUser, setSelectedUser] = useState<User | null>(null);
   const { showToast } = useToast();
 
-  useEffect(() => {
-    async function fetchUsers() {
-      const res = await fetch("/api/admin/usuarios");
-      const data = await res.json();
-      setUsers(data);
-      setLoading(false);
-    }
-    fetchUsers();
-  }, []);
+  const users = data?.users || [];
 
   async function handlePromote(id: string) {
-    const res = await fetch(`/api/admin/usuarios/${id}/promote`, {
-      method: "PUT",
-    });
-
-    if (res.ok) {
-      setUsers((prev) =>
-        prev.map((u) => (u._id === id ? { ...u, role: "Admin" } : u))
-      );
+    try {
+      await promoteUserMutation.mutateAsync(id);
       showToast("Usuário promovido a Admin!");
-    } else {
+    } catch {
       showToast("Erro ao promover usuário", "error");
     }
   }
 
   return (
-    <div className="min-h-screen bg-base-200 flex flex-col lg:flex-row">
+    <AdminLayout>
       <div id="toast-container" className="toast toast-top toast-end" />
-
-      {/* Menu lateral */}
-      <aside className="bg-base-100 shadow-md p-4 w-full lg:w-64">
-        <h2 className="text-xl font-bold mb-4 lg:mb-6 text-center lg:text-left">
-          Admin
-        </h2>
-        <ul className="menu menu-horizontal lg:menu-vertical flex justify-center lg:block">
-          <li>
-            <a href="/admin/">Home</a>
-          </li>
-          <li>
-            <a href="/admin/pedidos">Pedidos</a>
-          </li>
-          <li className="font-semibold">
-            <a className="active">Usuários</a>
-          </li>
-          <li>
-            <a href="/admin/produtos">Produtos</a>
-          </li>
-        </ul>
-      </aside>
-
-      {/* Conteúdo principal */}
-      <main className="flex-1 p-4 lg:p-6">
         <h1 className="text-xl sm:text-2xl font-bold mb-4">
           Gerenciar Usuários
         </h1>
 
-        {loading ? (
+        {isLoading ? (
           <p className="text-center text-gray-500">Carregando usuários...</p>
         ) : (
           <div className="overflow-x-auto">
@@ -113,13 +61,7 @@ export default function AdminUsersPage() {
                     <td>{u.email}</td>
                     <td>{u.cpf || u.cnpj || "-"}</td>
                     <td>
-                      <span
-                        className={`badge ${
-                          u.role === "Admin" ? "badge-primary" : "badge-ghost"
-                        }`}
-                      >
-                        {u.role}
-                      </span>
+                      <StatusBadge status={u.role} variant="user" />
                     </td>
                     <td>
                       {u.role !== "Admin" && (
@@ -140,11 +82,13 @@ export default function AdminUsersPage() {
             </table>
 
             {/* Cards em mobile */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:hidden">
+            <ResponsiveGrid cols={2} gap={4} className="md:hidden">
               {users.map((u) => (
-                <div
+                <Card
                   key={u._id}
-                  className="card bg-base-100 shadow-md p-4 space-y-2 cursor-pointer hover:bg-base-200"
+                  variant="admin"
+                  padding="md"
+                  className="space-y-2"
                   onClick={() => setSelectedUser(u)}
                 >
                   <h2 className="font-bold text-lg">{u.name}</h2>
@@ -157,13 +101,7 @@ export default function AdminUsersPage() {
                   </p>
                   <p>
                     <span className="font-semibold">Role:</span>{" "}
-                    <span
-                      className={`badge ${
-                        u.role === "Admin" ? "badge-primary" : "badge-ghost"
-                      }`}
-                    >
-                      {u.role}
-                    </span>
+                    <StatusBadge status={u.role} variant="user" />
                   </p>
                   {u.role !== "Admin" && (
                     <Button
@@ -176,70 +114,59 @@ export default function AdminUsersPage() {
                       Tornar Admin
                     </Button>
                   )}
-                </div>
+                </Card>
               ))}
-            </div>
+            </ResponsiveGrid>
           </div>
         )}
-      </main>
 
       {/* Modal de detalhes do usuário */}
-      {selectedUser && (
-        <dialog open className="modal modal-open">
-          <div className="modal-box max-w-2xl">
-            <h3 className="font-bold text-lg mb-4">
-              Detalhes do Usuário: {selectedUser.name}
-            </h3>
-            <div className="space-y-2">
-              <p>
-                <span className="font-semibold">Email:</span>{" "}
-                {selectedUser.email}
-              </p>
-              <p>
-                <span className="font-semibold">Telefone:</span>{" "}
-                {selectedUser.telefone || "-"}
-              </p>
-              <p>
-                <span className="font-semibold">Tipo Pessoa:</span>{" "}
-                {selectedUser.tipoPessoa}
-              </p>
-              <p>
-                <span className="font-semibold">CPF:</span>{" "}
-                {selectedUser.cpf || "-"}
-              </p>
-              <p>
-                <span className="font-semibold">CNPJ:</span>{" "}
-                {selectedUser.cnpj || "-"}
-              </p>
-              <p>
-                <span className="font-semibold">Endereço:</span>{" "}
-                {selectedUser.endereco
-                  ? `${selectedUser.endereco.rua || ""}, ${
-                      selectedUser.endereco.numero || ""
-                    } - ${selectedUser.endereco.bairro || ""}, ${
-                      selectedUser.endereco.cidade || ""
-                    } - ${selectedUser.endereco.estado || ""}, CEP: ${
-                      selectedUser.endereco.cep || ""
-                    }`
-                  : "-"}
-              </p>
-              <p>
-                <span className="font-semibold">Role:</span> {selectedUser.role}
-              </p>
-            </div>
-            <div className="modal-action">
-              <form method="dialog">
-                <Button
-                  variant="secondary"
-                  onClick={() => setSelectedUser(null)}
-                >
-                  Fechar
-                </Button>
-              </form>
-            </div>
+      <Modal
+        isOpen={!!selectedUser}
+        onClose={() => setSelectedUser(null)}
+        title={`Detalhes do Usuário: ${selectedUser?.name}`}
+        size="lg"
+      >
+        {selectedUser && (
+          <div className="space-y-2">
+            <p>
+              <span className="font-semibold">Email:</span>{" "}
+              {selectedUser.email}
+            </p>
+            <p>
+              <span className="font-semibold">Telefone:</span>{" "}
+              {selectedUser.telefone || "-"}
+            </p>
+            <p>
+              <span className="font-semibold">Tipo Pessoa:</span>{" "}
+              {selectedUser.tipoPessoa}
+            </p>
+            <p>
+              <span className="font-semibold">CPF:</span>{" "}
+              {selectedUser.cpf || "-"}
+            </p>
+            <p>
+              <span className="font-semibold">CNPJ:</span>{" "}
+              {selectedUser.cnpj || "-"}
+            </p>
+            <p>
+              <span className="font-semibold">Endereço:</span>{" "}
+              {selectedUser.endereco
+                ? `${selectedUser.endereco.rua || ""}, ${
+                    selectedUser.endereco.numero || ""
+                  } - ${selectedUser.endereco.bairro || ""}, ${
+                    selectedUser.endereco.cidade || ""
+                  } - ${selectedUser.endereco.estado || ""}, CEP: ${
+                    selectedUser.endereco.cep || ""
+                  }`
+                : "-"}
+            </p>
+            <p>
+              <span className="font-semibold">Role:</span> {selectedUser.role}
+            </p>
           </div>
-        </dialog>
-      )}
-    </div>
+        )}
+      </Modal>
+    </AdminLayout>
   );
 }

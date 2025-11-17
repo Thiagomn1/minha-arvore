@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Product } from "@/types";
 import Button from "./ui/Button";
+import Card from "./ui/Card";
 import { useState } from "react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
 
@@ -18,9 +19,10 @@ export default function ProductCard({
   const decreaseQty = () => setQty((prev) => (prev > 1 ? prev - 1 : 1));
 
   return (
-    <div
+    <Card
       key={product._id}
-      className="card bg-base-100 shadow-xl border border-green-100 hover:shadow-2xl transition"
+      variant="elevated"
+      className="border border-green-100 hover:shadow-2xl transition"
     >
       <figure className="px-4 pt-4">
         <Image
@@ -75,6 +77,6 @@ export default function ProductCard({
           </Button>
         </div>
       </div>
-    </div>
+    </Card>
   );
 }

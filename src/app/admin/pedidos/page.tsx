@@ -1,48 +1,28 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import AdminLayout from "@/components/layouts/AdminLayout";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
+import Modal from "@/components/ui/Modal";
+import StatusBadge from "@/components/ui/StatusBadge";
 import Input from "@/components/ui/Input";
 import { useToast } from "@/hooks/useToast";
-
-interface ProductType {
-  _id: string;
-  name: string;
-  imageUrl?: string;
-  qty: number;
-}
-
-interface OrderType {
-  _id: string;
-  orderId: string;
-  products: ProductType[];
-  total: number;
-  status: "Pendente" | "Em Processo" | "Plantado";
-  location: { latitude: number; longitude: number };
-  mudaImage?: string;
-  createdAt: string;
-}
+import { useAdminOrders, useUploadOrderImage } from "@/hooks/useOrders";
+import type { Order } from "@/types";
 
 export default function AdminOrdersPage() {
-  const [orders, setOrders] = useState<OrderType[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, isLoading } = useAdminOrders();
+  const uploadImageMutation = useUploadOrderImage();
   const [showModal, setShowModal] = useState(false);
-  const [selectedOrder, setSelectedOrder] = useState<OrderType | null>(null);
+  const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [mudaFile, setMudaFile] = useState<File | null>(null);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
   const { showToast } = useToast();
 
-  useEffect(() => {
-    async function fetchOrders() {
-      const res = await fetch("/api/admin/pedidos");
-      const data = await res.json();
-      setOrders(data);
-      setLoading(false);
-    }
-    fetchOrders();
-  }, []);
+  const orders = data?.orders || [];
 
   const handleUploadImage = async () => {
     if (!selectedOrder || !mudaFile) return;
@@ -53,27 +33,16 @@ export default function AdminOrdersPage() {
     formData.append("mudaImage", mudaFile);
 
     try {
-      const res = await fetch(
-        `/api/admin/pedidos/${selectedOrder._id}/upload-image`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
+      await uploadImageMutation.mutateAsync({
+        id: selectedOrder._id,
+        formData,
+      });
 
-      if (res.ok) {
-        const updatedOrder = await res.json();
-        setOrders((prev) =>
-          prev.map((o) => (o._id === updatedOrder._id ? updatedOrder : o))
-        );
-        setShowModal(false);
-        setMudaFile(null);
-        showToast(
-          "Imagem enviada com sucesso! Pedido atualizado para 'Plantado'."
-        );
-      } else {
-        showToast("Erro ao enviar imagem", "error");
-      }
+      setShowModal(false);
+      setMudaFile(null);
+      showToast(
+        "Imagem enviada com sucesso! Pedido atualizado para 'Plantado'."
+      );
     } catch (err) {
       console.error(err);
       showToast("Erro ao enviar imagem", "error");
@@ -83,37 +52,13 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div className="min-h-screen bg-base-200 flex flex-col lg:flex-row">
+    <AdminLayout>
       <div id="toast-container" className="toast toast-top toast-end" />
-
-      {/* Sidebar */}
-      <aside className="bg-base-100 shadow-md p-4 w-full lg:w-64">
-        <h2 className="text-xl font-bold mb-4 lg:mb-6 text-center lg:text-left">
-          Admin
-        </h2>
-        <ul className="menu menu-horizontal lg:menu-vertical flex justify-center lg:block">
-          <li>
-            <a href="/admin/">Home</a>
-          </li>
-          <li className="font-semibold">
-            <a className="active">Pedidos</a>
-          </li>
-          <li>
-            <a href="/admin/usuarios">Usuários</a>
-          </li>
-          <li>
-            <a href="/admin/produtos">Produtos</a>
-          </li>
-        </ul>
-      </aside>
-
-      {/* Conteúdo */}
-      <main className="flex-1 p-4 lg:p-6">
         <h1 className="text-xl sm:text-2xl font-bold mb-4">
           Gerenciar Pedidos
         </h1>
 
-        {loading ? (
+        {isLoading ? (
           <p className="text-center text-gray-500">Carregando pedidos...</p>
         ) : (
           <>
@@ -136,17 +81,7 @@ export default function AdminOrdersPage() {
                     <tr key={o._id}>
                       <td>{o.orderId}</td>
                       <td>
-                        <span
-                          className={`badge ${
-                            o.status === "Plantado"
-                              ? "badge-success"
-                              : o.status === "Em Processo"
-                              ? "badge-warning"
-                              : "badge-ghost"
-                          }`}
-                        >
-                          {o.status}
-                        </span>
+                        <StatusBadge status={o.status} variant="order" />
                       </td>
                       <td>
                         {o.products.map((p) => (
@@ -157,7 +92,7 @@ export default function AdminOrdersPage() {
                       </td>
                       <td>R$ {o.total.toFixed(2)}</td>
                       <td>
-                        Lat: {o.location.latitude}, Lng: {o.location.longitude}
+                        Lat: {o.location?.latitude}, Lng: {o.location?.longitude}
                       </td>
                       <td>
                         {o.mudaImage ? (
@@ -210,21 +145,11 @@ export default function AdminOrdersPage() {
             {/* Cards mobile */}
             <div className="grid grid-cols-1 gap-4 md:hidden">
               {orders.map((o) => (
-                <div key={o._id} className="card bg-base-100 shadow-md p-4">
+                <Card key={o._id} variant="small" padding="md">
                   <div className="flex justify-between items-start mb-2">
                     <div>
                       <p className="font-bold">Pedido #{o.orderId}</p>
-                      <span
-                        className={`badge ${
-                          o.status === "Plantado"
-                            ? "badge-success"
-                            : o.status === "Em Processo"
-                            ? "badge-warning"
-                            : "badge-ghost"
-                        }`}
-                      >
-                        {o.status}
-                      </span>
+                      <StatusBadge status={o.status} variant="order" />
                     </div>
                     {o.mudaImage && (
                       <button onClick={() => setLightboxImage(o.mudaImage!)}>
@@ -248,7 +173,7 @@ export default function AdminOrdersPage() {
                   </ul>
                   <p>Total: R$ {o.total.toFixed(2)}</p>
                   <p>
-                    Local: Lat {o.location.latitude}, Lng {o.location.longitude}
+                    Local: Lat {o.location?.latitude}, Lng {o.location?.longitude}
                   </p>
                   <div className="flex flex-col gap-2 mt-2">
                     <Button
@@ -261,59 +186,69 @@ export default function AdminOrdersPage() {
                       Enviar Foto
                     </Button>
                   </div>
-                </div>
+                </Card>
               ))}
             </div>
           </>
         )}
 
-        {showModal && selectedOrder && (
-          <dialog open className="modal">
-            <div className="modal-box max-w-md">
-              <h3 className="font-bold text-lg mb-2">Enviar foto da muda</h3>
-              <p>Pedido #{selectedOrder.orderId}</p>
-              <Input
-                type="file"
-                accept="image/*"
-                onChange={(e) => setMudaFile(e.target.files?.[0] || null)}
-              />
-              <div className="modal-action">
-                <Button
-                  onClick={handleUploadImage}
-                  variant="primary"
-                  disabled={uploading}
-                >
-                  {uploading ? "Enviando..." : "Salvar"}
-                </Button>
-                <Button onClick={() => setShowModal(false)} variant="secondary">
-                  Cancelar
-                </Button>
-              </div>
-            </div>
-          </dialog>
+      <Modal
+        isOpen={showModal && !!selectedOrder}
+        onClose={() => setShowModal(false)}
+        title="Enviar foto da muda"
+        size="sm"
+        actions={
+          <>
+            <Button
+              onClick={handleUploadImage}
+              variant="primary"
+              disabled={uploading}
+            >
+              {uploading ? "Enviando..." : "Salvar"}
+            </Button>
+            <Button onClick={() => setShowModal(false)} variant="secondary">
+              Cancelar
+            </Button>
+          </>
+        }
+      >
+        {selectedOrder && (
+          <>
+            <p>Pedido #{selectedOrder.orderId}</p>
+            <Input
+              type="file"
+              accept="image/*"
+              onChange={(e) => setMudaFile(e.target.files?.[0] || null)}
+            />
+          </>
         )}
+      </Modal>
 
-        {/* Lightbox */}
+      {/* Lightbox */}
+      <Modal
+        isOpen={!!lightboxImage}
+        onClose={() => setLightboxImage(null)}
+        size="xl"
+        actions={null}
+      >
         {lightboxImage && (
-          <dialog open className="modal">
-            <div className="modal-box p-0 relative">
-              <button
-                className="btn btn-sm btn-circle absolute right-2 top-2"
-                onClick={() => setLightboxImage(null)}
-              >
-                ✕
-              </button>
-              <Image
-                src={lightboxImage}
-                alt="Imagem da muda"
-                width={800}
-                height={800}
-                className="w-full h-auto object-contain"
-              />
-            </div>
-          </dialog>
+          <div className="relative">
+            <button
+              className="btn btn-sm btn-circle absolute right-2 top-2"
+              onClick={() => setLightboxImage(null)}
+            >
+              ✕
+            </button>
+            <Image
+              src={lightboxImage}
+              alt="Imagem da muda"
+              width={800}
+              height={800}
+              className="w-full h-auto object-contain"
+            />
+          </div>
         )}
-      </main>
-    </div>
+      </Modal>
+    </AdminLayout>
   );
 }

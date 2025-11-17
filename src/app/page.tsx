@@ -3,7 +3,7 @@ import { useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
 import { useCart } from "@/context/useCart";
-import { Category, Product } from "@/types";
+import { Product } from "@/types";
 import Hero from "../components/ui/Hero";
 import Image from "next/image";
 import { useProducts } from "@/hooks/useProducts";
