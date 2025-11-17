@@ -1,11 +1,15 @@
 "use client";
+
 import { useRouter } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { useCart } from "@/context/useCart";
-import MapPicker from "@/components/MapPicker";
+import { useCreateOrder } from "@/hooks/useOrders";
+import { useToast } from "@/hooks/useToast";
+import MapPickerLazy from "@/components/MapPickerLazy";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
+import { LoadingSpinner } from "@/components/ui/Loading";
 
 export default function CartPage() {
   const { data: session } = useSession();
@@ -15,75 +19,57 @@ export default function CartPage() {
   const clear = useCart((s) => s.clear);
   const router = useRouter();
   const [location, setLocation] = useState({ lat: "", lng: "" });
-  const [loading, setLoading] = useState(false);
+  const { showToast } = useToast();
+  const createOrder = useCreateOrder();
 
   const setMapLocation = (lat: string, lng: string) => {
     setLocation({ lat, lng });
   };
 
-  const showToast = (
-    message: string,
-    type: "success" | "error" = "success"
-  ) => {
-    const toastContainer = document.getElementById("toast-container");
-    if (!toastContainer) return;
-
-    const toast = document.createElement("div");
-    toast.className = `alert ${
-      type === "success" ? "alert-success" : "alert-error"
-    } shadow-lg`;
-    toast.innerHTML = `<span>${message}</span>`;
-    toastContainer.appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 3000);
-  };
-
-  const checkout = async () => {
-    if (!items.length || !location.lat || !location.lng) return;
-    setLoading(true);
+  const handleCheckout = async () => {
+    if (!items.length || !location.lat || !location.lng || !session?.user?.id) {
+      showToast("Preencha todos os campos", "error");
+      return;
+    }
 
     try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          products: items.map((i) => ({
-            _id: i._id,
-            qty: i.qty,
-            imageUrl: i.image,
-          })),
-          location: {
-            latitude: Number(location.lat),
-            longitude: Number(location.lng),
-          },
-          userId: session?.user?.id,
-        }),
+      await createOrder.mutateAsync({
+        userId: session.user.id,
+        products: items.map((i) => ({
+          _id: i._id,
+          qty: i.qty,
+          imageUrl: i.imageUrl,
+        })),
+        location: {
+          latitude: Number(location.lat),
+          longitude: Number(location.lng),
+        },
       });
 
-      const data = await res.json();
-
-      if (res.ok) {
-        clear();
-        showToast("Pedido criado com sucesso!");
-        router.push(`/pedidos/${session?.user?.id}`);
-      } else {
-        showToast(data.error || "Erro ao criar pedido.", "error");
-      }
-      //eslint-disable-next-line
-    } catch (err: any) {
-      console.error(err);
-      showToast("Ocorreu um erro ao processar o pedido.", "error");
-    } finally {
-      setLoading(false);
+      clear();
+      showToast("Pedido criado com sucesso!");
+      router.push(`/pedidos/${session.user.id}`);
+    } catch (error) {
+      const errorMessage =
+        error instanceof Error ? error.message : "Erro ao criar pedido";
+      showToast(errorMessage, "error");
     }
+  };
+
+  const handleRemoveItem = (itemId: string, itemName: string) => {
+    remove(itemId);
+    showToast(`${itemName} removido do carrinho.`, "error");
+  };
+
+  const handleClearCart = () => {
+    clear();
+    showToast("Carrinho limpo.", "info");
   };
 
   return (
     <div className="max-w-5xl mx-auto p-6">
-      {/* Toasts */}
-      <div id="toast-container" className="toast toast-top toast-end"></div>
+      {/* Toast Container */}
+      <div id="toast-container" className="toast toast-top toast-end" />
 
       <h2 className="text-3xl font-bold mb-6 text-primary">Seu Carrinho</h2>
 
@@ -96,38 +82,35 @@ export default function CartPage() {
             </div>
           ) : (
             <ul className="space-y-4">
-              {items.map((i) => (
+              {items.map((item) => (
                 <li
-                  key={i._id}
+                  key={item._id}
                   className="card card-bordered bg-base-100 shadow-md"
                 >
                   <div className="card-body p-4 flex flex-row gap-4 items-center">
                     <div className="w-20 h-20 flex-shrink-0">
                       <Image
-                        src={i.image}
-                        alt={i.name}
-                        width={500}
-                        height={500}
+                        src={item.imageUrl}
+                        alt={item.name}
+                        width={80}
+                        height={80}
                         className="w-full h-full object-cover rounded-md"
                       />
                     </div>
 
                     <div className="flex-1">
-                      <h4 className="font-bold">{i.name}</h4>
-                      <p className="text-sm opacity-70">Qtd: {i.qty}</p>
+                      <h4 className="font-bold">{item.name}</h4>
+                      <p className="text-sm opacity-70">Qtd: {item.qty}</p>
                     </div>
 
                     <div className="text-right">
                       <p className="font-semibold">
-                        R$ {(i.price * i.qty).toFixed(2)}
+                        R$ {(item.price * item.qty).toFixed(2)}
                       </p>
                       <Button
                         variant="error"
                         className="btn-xs mt-2"
-                        onClick={() => {
-                          remove(i._id);
-                          showToast(`${i.name} removido do carrinho.`, "error");
-                        }}
+                        onClick={() => handleRemoveItem(item._id, item.name)}
                       >
                         Remover
                       </Button>
@@ -151,31 +134,31 @@ export default function CartPage() {
         {/* Mapa e Checkout */}
         <div>
           <h3 className="font-semibold mb-2">Onde plantar?</h3>
-          <MapPicker onPick={setMapLocation} />
+          <MapPickerLazy onPick={setMapLocation} />
 
           <div className="mt-4 flex flex-col gap-3">
             <Button
               disabled={
-                !items.length || !location.lat || !location.lng || loading
+                !items.length ||
+                !location.lat ||
+                !location.lng ||
+                createOrder.isPending
               }
-              onClick={checkout}
+              onClick={handleCheckout}
               className="btn btn-primary w-full rounded-md"
             >
-              {loading ? (
-                <span className="loading loading-spinner"></span>
+              {createOrder.isPending ? (
+                <span className="flex items-center gap-2">
+                  <LoadingSpinner size="sm" />
+                  Processando...
+                </span>
               ) : (
                 "Finalizar Pedido"
               )}
             </Button>
+
             {items.length > 0 && (
-              <Button
-                onClick={() => {
-                  clear();
-                  showToast("Carrinho limpo.", "error");
-                }}
-                variant="error"
-                outline
-              >
+              <Button onClick={handleClearCart} variant="error" outline>
                 Limpar Carrinho
               </Button>
             )}

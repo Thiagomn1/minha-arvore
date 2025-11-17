@@ -1,37 +1,47 @@
-import dbConnect from "@/lib/mongoose";
-import Order from "@/models/Order";
 import { NextResponse } from "next/server";
+import { OrderService } from "@/services/order.service";
+import { paginationSchema } from "@/lib/validations/schemas";
+import { handleApiError } from "@/lib/api-client";
 
+/**
+ * GET /api/pedidos/[id]
+ * Busca pedidos de um usuário
+ * [id] = userId
+ */
 export async function GET(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await dbConnect();
+    const { id: userId } = await params;
 
-    const { id } = await params;
+    const { searchParams } = new URL(req.url);
 
-    const orders = await Order.find({ userId: id })
-      .populate({
-        path: "products._id",
-        select: "name imageUrl",
-      })
-      .sort({ createdAt: -1 })
-      .lean();
+    const paginationData = paginationSchema.safeParse({
+      page: searchParams.get("page") || "1",
+      limit: searchParams.get("limit") || "10",
+    });
 
-    if (!orders || orders.length === 0) {
+    if (!paginationData.success) {
       return NextResponse.json(
-        { message: "Nenhum pedido encontrado para este usuário." },
-        { status: 404 }
+        { error: "Parâmetros inválidos", details: paginationData.error },
+        { status: 400 }
       );
     }
 
-    return NextResponse.json(orders, { status: 200 });
+    const { page, limit } = paginationData.data;
+    const result = await OrderService.getUserOrders(userId, page, limit);
+
+    return NextResponse.json(result, { status: 200 });
   } catch (error) {
-    console.error("Erro ao buscar pedidos:", error);
+    console.error("Error in GET /api/pedidos/[id]:", error);
+
+    const message = handleApiError(error);
+    const status = message.includes("não encontrado") ? 404 : 500;
+
     return NextResponse.json(
-      { message: "Erro interno ao buscar pedidos." },
-      { status: 500 }
+      { error: "Erro ao buscar pedidos", message },
+      { status }
     );
   }
 }

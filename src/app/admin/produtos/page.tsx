@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 import Image from "next/image";
+import { useToast } from "@/hooks/useToast";
 
 interface ProductType {
   _id: string;
@@ -31,6 +32,7 @@ export default function AdminProductsPage() {
     category: "",
     status: "Disponível",
   });
+  const { showToast } = useToast();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -41,23 +43,6 @@ export default function AdminProductsPage() {
     }
     fetchProducts();
   }, []);
-
-  function showToast(message: string, type: "success" | "error" = "success") {
-    const toastContainer = document.getElementById("toast-container");
-    if (!toastContainer) return;
-
-    const toast = document.createElement("div");
-    toast.className = `alert ${
-      type === "success" ? "alert-success" : "alert-error"
-    } shadow-lg`;
-    toast.innerHTML = `<span>${message}</span>`;
-
-    toastContainer.appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 3000);
-  }
 
   async function handleAddProduct(e: React.FormEvent) {
     e.preventDefault();
@@ -142,7 +127,7 @@ export default function AdminProductsPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col lg:flex-row">
-      <div id="toast-container" className="toast toast-top toast-end"></div>
+      <div id="toast-container" className="toast toast-top toast-end" />
 
       {/* Menu lateral */}
       <aside className="bg-base-100 shadow-md p-4 w-full lg:w-64">

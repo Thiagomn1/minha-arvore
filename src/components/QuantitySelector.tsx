@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { MinusIcon, PlusIcon } from "@heroicons/react/24/solid";
 import Button from "./ui/Button";
-import { Product } from "@/types/ProductTypes";
+import { Product } from "@/types";
 import AddToCartButton from "./AddToCartButton";
 
 export default function QuantitySelector({ product }: { product: Product }) {

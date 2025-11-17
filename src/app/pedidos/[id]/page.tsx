@@ -1,26 +1,13 @@
 "use client";
 
-import { Product } from "@/types/ProductTypes";
+import { Order } from "@/types";
 import Image from "next/image";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
-import { getAddressFromCoords } from "@/lib/geocode";
+import { getAddressFromCoords } from "@/lib/utils/geocode";
 import Button from "@/components/ui/Button";
 import dynamic from "next/dynamic";
-
-interface Order {
-  _id: string;
-  orderId: string;
-  products: Product[];
-  total: number;
-  status: "Pendente" | "Em Processo" | "Plantado";
-  createdAt: string;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
-  photoUrl?: string; // adicionamos o campo para guardar a foto da muda
-}
+import { useUserOrders } from "@/hooks/useOrders";
 
 const MapModal = dynamic(() => import("@/components/MapModal"), {
   ssr: false,
@@ -28,42 +15,27 @@ const MapModal = dynamic(() => import("@/components/MapModal"), {
 
 export default function UserOrdersPage() {
   const params = useParams();
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [message, setMessage] = useState<string | undefined | null>(null);
-  const [loading, setLoading] = useState(true);
+  const userId = params?.id as string;
+
+  const { data, isLoading, error } = useUserOrders(userId);
   const [addresses, setAddresses] = useState<Record<string, string>>({});
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [selectedPhoto, setSelectedPhoto] = useState<string | null>(null);
 
+  const orders = data?.orders || [];
+
   useEffect(() => {
-    if (!params?.id) return;
-
-    async function fetchOrders() {
-      const res = await fetch(`/api/pedidos/${params.id}`);
-      const data = await res.json();
-
-      if (Array.isArray(data)) {
-        setOrders(data);
-        setMessage(null);
-
-        // Buscar endereços aproximados
-        data.forEach(async (order: Order) => {
-          const addr = await getAddressFromCoords(
-            order.location.latitude,
-            order.location.longitude
-          );
-          setAddresses((prev) => ({ ...prev, [order._id]: addr }));
-        });
-      } else if ("message" in data) {
-        setOrders([]);
-        setMessage(data.message);
+    // Buscar endereços aproximados para cada pedido
+    orders.forEach(async (order) => {
+      if (order.location) {
+        const addr = await getAddressFromCoords(
+          order.location.latitude,
+          order.location.longitude
+        );
+        setAddresses((prev) => ({ ...prev, [order._id]: addr }));
       }
-
-      setLoading(false);
-    }
-
-    fetchOrders();
-  }, [params?.id]);
+    });
+  }, [orders]);
 
   async function handleViewPhoto(orderId: string) {
     try {
@@ -80,9 +52,10 @@ export default function UserOrdersPage() {
     }
   }
 
-  if (loading) return <p className="p-4">Carregando pedidos...</p>;
-  if (message)
-    return <p className="p-4 text-center text-gray-500">{message}</p>;
+  if (isLoading) return <p className="p-4">Carregando pedidos...</p>;
+  if (error) return <p className="p-4 text-center text-gray-500">Erro ao carregar pedidos</p>;
+  if (orders.length === 0)
+    return <p className="p-4 text-center text-gray-500">Nenhum pedido encontrado</p>;
 
   return (
     <div className="min-h-screen bg-base-200 p-4">
@@ -171,7 +144,7 @@ export default function UserOrdersPage() {
       </div>
 
       {/* Modal do mapa */}
-      {selectedOrder && (
+      {selectedOrder && selectedOrder.location && (
         <MapModal
           opened={!!selectedOrder}
           onClose={() => setSelectedOrder(null)}

@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import { useToast } from "@/hooks/useToast";
 
 interface ProductType {
   _id: string;
@@ -31,6 +32,7 @@ export default function AdminOrdersPage() {
   const [mudaFile, setMudaFile] = useState<File | null>(null);
   const [lightboxImage, setLightboxImage] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const { showToast } = useToast();
 
   useEffect(() => {
     async function fetchOrders() {
@@ -41,22 +43,6 @@ export default function AdminOrdersPage() {
     }
     fetchOrders();
   }, []);
-
-  function showToast(message: string, type: "success" | "error" = "success") {
-    const toastContainer = document.getElementById("toast-container");
-    if (!toastContainer) return;
-
-    const toast = document.createElement("div");
-    toast.className = `alert ${
-      type === "success" ? "alert-success" : "alert-error"
-    } shadow-lg`;
-    toast.innerHTML = `<span>${message}</span>`;
-    toastContainer.appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 3000);
-  }
 
   const handleUploadImage = async () => {
     if (!selectedOrder || !mudaFile) return;
@@ -98,8 +84,7 @@ export default function AdminOrdersPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col lg:flex-row">
-      {/* Toasts */}
-      <div id="toast-container" className="toast toast-top toast-end"></div>
+      <div id="toast-container" className="toast toast-top toast-end" />
 
       {/* Sidebar */}
       <aside className="bg-base-100 shadow-md p-4 w-full lg:w-64">

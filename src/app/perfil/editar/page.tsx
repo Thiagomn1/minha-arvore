@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { SelectEstado } from "@/components/ui/SelectEstado";
 import { SelectCidade } from "@/components/ui/SelectCidade";
+import { useToast } from "@/hooks/useToast";
 
 export default function EditarPerfilPage() {
   const [menu, setMenu] = useState<"dados" | "endereco" | "senha">("dados");
@@ -27,18 +28,7 @@ export default function EditarPerfilPage() {
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmNovaSenha, setConfirmNovaSenha] = useState("");
 
-  // Toast
-  const [toastMessage, setToastMessage] = useState<string | null>(null);
-  const [toastType, setToastType] = useState<"success" | "error">("success");
-
-  const showToast = (
-    message: string,
-    type: "success" | "error" = "success"
-  ) => {
-    setToastMessage(message);
-    setToastType(type);
-    setTimeout(() => setToastMessage(null), 3000);
-  };
+  const { showToast } = useToast();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -78,6 +68,8 @@ export default function EditarPerfilPage() {
 
   return (
     <div className="flex min-h-screen bg-base-100">
+      <div id="toast-container" className="toast toast-top toast-center" />
+
       {/* Menu Lateral */}
       <aside className="w-64 bg-base-200 p-4 border-r">
         <ul className="menu">
@@ -218,19 +210,6 @@ export default function EditarPerfilPage() {
               {loading ? "Salvando..." : "Alterar Senha"}
             </Button>
           </form>
-        )}
-
-        {/* Toast */}
-        {toastMessage && (
-          <div className="toast toast-top toast-center z-50">
-            <div
-              className={`alert ${
-                toastType === "success" ? "alert-success" : "alert-error"
-              }`}
-            >
-              <span>{toastMessage}</span>
-            </div>
-          </div>
         )}
       </main>
     </div>

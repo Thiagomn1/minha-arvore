@@ -1,37 +1,49 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
 import { useCart } from "@/context/useCart";
-import { Category, Product } from "@/types/ProductTypes";
+import { Category, Product } from "@/types";
 import Hero from "../components/ui/Hero";
 import Image from "next/image";
+import { useProducts } from "@/hooks/useProducts";
 
 export default function Home() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { data, isLoading } = useProducts();
   const [active, setActive] = useState("");
   const add = useCart((s) => s.add);
 
-  useEffect(() => {
-    fetch("/api/produtos")
-      .then((r) => r.json())
-      .then((data) => {
-        setProducts(data.products);
-        setCategories(data.categories);
-        setActive(data.categories[0]?.id || "");
-      });
-  }, []);
+  const products = data?.products || [];
+  const categories = data?.categories || [];
+
+  // Set active category when data loads
+  if (categories.length > 0 && !active) {
+    setActive(categories[0].id);
+  }
 
   const onAdd = (p: Product, qty: number) => {
     add({
       _id: p._id,
       name: p.name,
+      description: p.description,
       price: p.price,
       qty: qty ?? 1,
-      image: p.imageUrl,
+      category: p.category,
+      imageUrl: p.imageUrl,
+      status: p.status,
     });
   };
+
+  if (isLoading) {
+    return (
+      <>
+        <Hero />
+        <div className="flex justify-center items-center min-h-[400px]">
+          <p className="text-lg">Carregando produtos...</p>
+        </div>
+      </>
+    );
+  }
   return (
     <>
       <Hero />

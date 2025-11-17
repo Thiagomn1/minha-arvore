@@ -1,43 +1,54 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Image from "next/image";
 import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
 import { useCart } from "@/context/useCart";
-import { Category, Product } from "@/types/ProductTypes";
+import { Product } from "@/types";
 import Link from "next/link";
+import { useProducts } from "@/hooks/useProducts";
 
 export default function ProductsPage() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const { data, isLoading } = useProducts();
   const [active, setActive] = useState("");
-
   const [slide, setSlide] = useState(0);
+
+  const add = useCart((s) => s.add);
+
+  const products = data?.products || [];
+  const categories = data?.categories || [];
   const totalSlides = products.slice(0, 5).length;
 
   const prevSlide = () => setSlide((s) => (s === 0 ? totalSlides - 1 : s - 1));
   const nextSlide = () => setSlide((s) => (s === totalSlides - 1 ? 0 : s + 1));
-  const add = useCart((s) => s.add);
 
-  useEffect(() => {
-    fetch("/api/produtos")
-      .then((r) => r.json())
-      .then((data) => {
-        setProducts(data.products);
-        setCategories(data.categories);
-        setActive(data.categories[0]?.id || "");
-      });
-  }, []);
+  // Set active category when data loads
+  if (categories.length > 0 && !active) {
+    setActive(categories[0].id);
+  }
 
   const onAdd = (p: Product, qty: number) => {
     add({
       _id: p._id,
       name: p.name,
+      description: p.description,
       price: p.price,
       qty: qty ?? 1,
-      image: p.imageUrl,
+      category: p.category,
+      imageUrl: p.imageUrl,
+      status: p.status,
     });
   };
+
+  if (isLoading) {
+    return (
+      <div className="container mx-auto px-6 py-12">
+        <div className="flex justify-center items-center min-h-[400px]">
+          <p className="text-lg">Carregando produtos...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto px-6 py-12">

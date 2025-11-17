@@ -1,93 +1,55 @@
-import bcrypt from "bcrypt";
-import dbConnect from "@/lib/mongoose";
-import User from "@/models/User";
 import { NextResponse } from "next/server";
+import { UserService } from "@/services/user.service";
+import { registerUserSchema } from "@/lib/validations/schemas";
+import { handleApiError } from "@/lib/api-client";
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const {
-      name,
-      tipoPessoa,
-      cpf,
-      cnpj,
-      email,
-      telefone,
-      endereco,
-      password,
-      consentimentoLGPD,
-    } = body;
 
-    if (!name || !tipoPessoa || !email || !telefone || !password) {
+    // Mapear consentimentoLGPD para aceitouTermos
+    const dataToValidate = {
+      ...body,
+      aceitouTermos: body.consentimentoLGPD || body.aceitouTermos,
+    };
+
+    // Validar dados com Zod
+    const validationResult = registerUserSchema.safeParse(dataToValidate);
+
+    if (!validationResult.success) {
       return NextResponse.json(
-        { message: "Campos obrigatórios em falta" },
+        {
+          error: "Dados inválidos",
+          message: "Verifique os campos e tente novamente",
+          details: validationResult.error.flatten().fieldErrors,
+        },
         { status: 400 }
       );
     }
 
-    if (!consentimentoLGPD) {
-      return NextResponse.json(
-        { message: "É necessário aceitar a política de privacidade (LGPD)" },
-        { status: 400 }
-      );
-    }
-
-    if (tipoPessoa === "PF" && !cpf) {
-      return NextResponse.json(
-        { message: "CPF obrigatório para pessoa física" },
-        { status: 400 }
-      );
-    }
-    if (tipoPessoa === "PJ" && !cnpj) {
-      return NextResponse.json(
-        { message: "CNPJ obrigatório para pessoa jurídica" },
-        { status: 400 }
-      );
-    }
-
-    await dbConnect();
-
-    const query: any[] = [{ email }];
-
-    if (cpf) {
-      query.push({ cpf });
-    }
-    if (cnpj) {
-      query.push({ cnpj });
-    }
-
-    const existingUser = await User.findOne({ $or: query });
-
-    if (existingUser) {
-      return NextResponse.json(
-        { message: "Usuário já cadastrado com esses dados" },
-        { status: 409 }
-      );
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const newUser = await User.create({
-      name,
-      tipoPessoa,
-      cpf: tipoPessoa === "PF" ? cpf : undefined,
-      cnpj: tipoPessoa === "PJ" ? cnpj : undefined,
-      email,
-      telefone,
-      endereco,
-      password: hashedPassword,
-      consentimentoLGPD,
-    });
+    // Criar usuário através do service
+    const user = await UserService.registerUser(validationResult.data);
 
     return NextResponse.json(
-      { message: "Usuário criado", userId: newUser._id },
+      {
+        success: true,
+        message: "Usuário criado com sucesso",
+        data: { userId: user._id },
+      },
       { status: 201 }
     );
   } catch (error) {
-    console.error(error);
+    console.error("Error in POST /api/auth/registro:", error);
+
+    const errorMessage = handleApiError(error);
+    const status = errorMessage.includes("já cadastrado") ? 409 : 500;
+
     return NextResponse.json(
-      { message: "Internal server error" },
-      { status: 500 }
+      {
+        error: "Erro ao criar usuário",
+        message: errorMessage,
+      },
+      { status }
     );
   }
 }

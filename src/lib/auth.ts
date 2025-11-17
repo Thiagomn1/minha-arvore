@@ -1,9 +1,9 @@
 import { AuthOptions, User as UserType, Session } from "next-auth";
 import type { JWT } from "next-auth/jwt";
 import CredentialsProvider from "next-auth/providers/credentials";
-import dbConnect from "./mongoose";
+import dbConnect from "./db/mongoose";
 import User from "@/models/User";
-import bcrypt from "bcrypt";
+import bcrypt from "bcryptjs";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -65,7 +65,7 @@ export const authOptions: AuthOptions = {
         token.name = user.name;
         token.email = user.email;
         token.cpf = user.cpf;
-        token.role = user.role; // adiciona o role
+        token.role = user.role;
       }
       return token;
     },

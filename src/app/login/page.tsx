@@ -5,12 +5,13 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import Button from "@/components/ui/Button";
+import { useToast } from "@/hooks/useToast";
 
 export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [errorMsg, setErrorMsg] = useState("");
-  const [showToast, setShowToast] = useState(false);
+  const { showToast } = useToast();
   const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
@@ -26,9 +27,8 @@ export default function Login() {
     if (result?.error) {
       setErrorMsg("Email ou senha inválidos");
     } else {
-      setShowToast(true);
+      showToast("Login realizado com sucesso!", "success");
       setTimeout(() => {
-        setShowToast(false);
         router.push("/");
       }, 1500);
     }
@@ -36,13 +36,7 @@ export default function Login() {
 
   return (
     <>
-      {showToast && (
-        <div className="toast toast-top toast-end z-50">
-          <div className="alert alert-success shadow-lg">
-            <span>Login realizado com sucesso!</span>
-          </div>
-        </div>
-      )}
+      <div id="toast-container" className="toast toast-top toast-end" />
 
       <main className="flex min-h-screen bg-base-200">
         <div className="hidden md:flex flex-1 items-center justify-center bg-gray-500">

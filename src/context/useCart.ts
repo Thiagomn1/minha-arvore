@@ -1,13 +1,9 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import type { CartItem as CartItemType } from "@/types";
 
-type CartItem = {
-  _id: string;
-  name: string;
-  price: number;
-  qty: number;
-  image: string;
-};
+// Tipo local do carrinho (compatível com CartItem de types)
+type CartItem = CartItemType;
 
 type State = {
   items: CartItem[];

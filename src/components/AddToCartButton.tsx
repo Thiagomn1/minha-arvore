@@ -1,5 +1,5 @@
 "use client";
-import { Product } from "@/types/ProductTypes";
+import { Product } from "@/types";
 import Button from "./ui/Button";
 import { useCart } from "@/context/useCart";
 

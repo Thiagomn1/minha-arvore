@@ -1,96 +1,90 @@
-import dbConnect from "@/lib/mongoose";
-import Product from "@/models/Product";
-import Order from "@/models/Order";
 import { NextResponse } from "next/server";
-import { Product as ProductType } from "@/types/ProductTypes";
-
-async function generateUniqueOrderId() {
-  let orderId = "";
-  let exists = true;
-
-  while (exists) {
-    orderId = Math.floor(10000000 + Math.random() * 90000000).toString();
-
-    const existing = await Order.exists({ orderId });
-    exists = !!existing;
-  }
-
-  return orderId;
-}
-
-async function createOrder(
-  userId: string,
-  products: { _id: string; qty?: number }[],
-  total: number,
-  location: { latitude: number; longitude: number }
-) {
-  const orderId = await generateUniqueOrderId();
-
-  const dbProducts = await Product.find({
-    _id: { $in: products.map((p) => p._id) },
-  });
-
-  const orderProducts = products.map((p) => {
-    const prod = dbProducts.find((db) => db._id.toString() === p._id);
-    if (!prod) throw new Error("Produto não encontrado");
-    return {
-      _id: prod._id,
-      name: prod.name,
-      imageUrl: prod.imageUrl,
-      qty: p.qty,
-    };
-  });
-
-  const newOrder = await Order.create({
-    userId,
-    products: orderProducts,
-    total,
-    location,
-    status: "Pendente",
-    orderId,
-  });
-
-  return newOrder;
-}
+import { OrderService } from "@/services/order.service";
+import { ProductService } from "@/services/product.service";
+import { createOrderSchema } from "@/lib/validations/schemas";
+import { handleApiError } from "@/lib/api-client";
 
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const { products, userId, location } = body as {
-      products: ProductType[];
-      userId: string;
-      location: { latitude: number; longitude: number };
+
+    const { products, userId, location } = body;
+
+    // Mapear location para o formato esperado
+    const orderData = {
+      products,
+      total: 0, // Será calculado
+      location: location
+        ? {
+            lat: location.latitude || location.lat,
+            lng: location.longitude || location.lng,
+          }
+        : undefined,
     };
 
-    await dbConnect();
-
-    const dbProducts = await Product.find({
-      _id: { $in: products.map((p) => p._id) },
-    });
+    // Buscar produtos do DB para calcular o total
+    const productIds = products.map((p: any) => p._id || p.productId);
+    const dbProductsPromises = productIds.map((id: string) =>
+      ProductService.getProductById(id)
+    );
+    const dbProducts = await Promise.all(dbProductsPromises);
 
     if (dbProducts.length === 0) {
-      return new NextResponse(
-        JSON.stringify({ error: "Produtos não encontrados" }),
+      return NextResponse.json(
+        { error: "Produtos não encontrados" },
         { status: 400 }
       );
     }
 
-    const total = dbProducts.reduce((acc, prod) => {
-      const qty = products.find((p) => p._id === prod._id.toString())?.qty || 1;
-      return acc + prod.price * qty;
-    }, 0);
+    // Calcular total e preparar produtos para o pedido
+    let total = 0;
+    const orderProducts = products.map((p: any) => {
+      const product = dbProducts.find(
+        (db) => db._id.toString() === (p._id || p.productId)
+      );
+      if (!product) {
+        throw new Error(`Produto ${p._id || p.productId} não encontrado`);
+      }
 
-    const newOrder = await createOrder(userId, products, total, location);
+      const quantity = p.qty || p.quantity || 1;
+      const price = product.price;
+      total += price * quantity;
 
-    return new NextResponse(JSON.stringify(newOrder), {
-      status: 201,
-      headers: { "Content-Type": "application/json" },
+      return {
+        productId: product._id.toString(),
+        quantity,
+        price,
+      };
     });
-    //eslint-disable-next-line
-  } catch (err: any) {
-    console.error("Erro ao criar ordem:", err);
-    return new NextResponse(JSON.stringify({ error: "Erro ao criar ordem" }), {
-      status: 500,
-    });
+
+    orderData.products = orderProducts;
+    orderData.total = total;
+
+    // Validar dados com Zod
+    const validationResult = createOrderSchema.safeParse(orderData);
+
+    if (!validationResult.success) {
+      return NextResponse.json(
+        {
+          error: "Dados inválidos",
+          details: validationResult.error.flatten().fieldErrors,
+        },
+        { status: 400 }
+      );
+    }
+
+    // Criar pedido através do service
+    const newOrder = await OrderService.createOrder(
+      userId,
+      validationResult.data
+    );
+
+    return NextResponse.json(newOrder, { status: 201 });
+  } catch (error) {
+    console.error("Error in POST /api/checkout:", error);
+    return NextResponse.json(
+      { error: "Erro ao criar pedido", message: handleApiError(error) },
+      { status: 500 }
+    );
   }
 }

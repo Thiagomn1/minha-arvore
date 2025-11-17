@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Button from "@/components/ui/Button";
+import { useToast } from "@/hooks/useToast";
 
 interface Endereco {
   rua?: string;
@@ -28,6 +29,7 @@ export default function AdminUsersPage() {
   const [users, setUsers] = useState<UserType[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedUser, setSelectedUser] = useState<UserType | null>(null);
+  const { showToast } = useToast();
 
   useEffect(() => {
     async function fetchUsers() {
@@ -38,23 +40,6 @@ export default function AdminUsersPage() {
     }
     fetchUsers();
   }, []);
-
-  function showToast(message: string, type: "success" | "error" = "success") {
-    const toastContainer = document.getElementById("toast-container");
-    if (!toastContainer) return;
-
-    const toast = document.createElement("div");
-    toast.className = `alert ${
-      type === "success" ? "alert-success" : "alert-error"
-    } shadow-lg`;
-    toast.innerHTML = `<span>${message}</span>`;
-
-    toastContainer.appendChild(toast);
-
-    setTimeout(() => {
-      toast.remove();
-    }, 3000);
-  }
 
   async function handlePromote(id: string) {
     const res = await fetch(`/api/admin/usuarios/${id}/promote`, {
@@ -73,8 +58,7 @@ export default function AdminUsersPage() {
 
   return (
     <div className="min-h-screen bg-base-200 flex flex-col lg:flex-row">
-      {/* Toasts */}
-      <div id="toast-container" className="toast toast-top toast-end"></div>
+      <div id="toast-container" className="toast toast-top toast-end" />
 
       {/* Menu lateral */}
       <aside className="bg-base-100 shadow-md p-4 w-full lg:w-64">

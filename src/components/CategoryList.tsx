@@ -1,4 +1,4 @@
-import { Category } from "@/types/ProductTypes";
+import { Category } from "@/types";
 import Button from "./ui/Button";
 
 export default function CategoryList({

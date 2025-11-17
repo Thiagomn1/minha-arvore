@@ -1,8 +1,8 @@
 import Image from "next/image";
 import { notFound } from "next/navigation";
-import dbConnect from "@/lib/mongoose";
+import dbConnect from "@/lib/db/mongoose";
 import ProductModel from "@/models/Product";
-import { Product } from "@/types/ProductTypes";
+import { Product } from "@/types";
 import QuantitySelector from "@/components/QuantitySelector";
 
 export default async function ProductPage({

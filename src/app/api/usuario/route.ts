@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
-import { updateUser } from "@/lib/updateUser";
+import { UserService } from "@/services/user.service";
 
 export async function PUT(req: NextRequest) {
   try {
@@ -15,9 +15,30 @@ export async function PUT(req: NextRequest) {
 
     const body = await req.json();
     const { type, payload } = body;
-
     const userId = session.user.id;
-    const updatedUser = await updateUser(userId, type, payload);
+
+    let updatedUser;
+
+    if (type === "dados") {
+      updatedUser = await UserService.updateUserDados(userId, {
+        nome: payload.nome,
+        email: payload.email,
+      });
+    } else if (type === "endereco") {
+      updatedUser = await UserService.updateUserEndereco(userId, {
+        endereco: payload.endereco || {},
+      });
+    } else if (type === "senha") {
+      updatedUser = await UserService.updateUserSenha(userId, {
+        senhaAtual: payload.senhaAtual,
+        novaSenha: payload.novaSenha,
+      });
+    } else {
+      return NextResponse.json(
+        { success: false, message: "Tipo inválido" },
+        { status: 400 }
+      );
+    }
 
     return NextResponse.json({ success: true, user: updatedUser });
   } catch (err: unknown) {
