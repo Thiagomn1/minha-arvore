@@ -6,7 +6,15 @@ export async function GET() {
   try {
     await dbConnect();
     const users = await User.find().lean();
-    return NextResponse.json(users, { status: 200 });
+    return NextResponse.json({
+      users,
+      pagination: {
+        page: 1,
+        limit: users.length,
+        total: users.length,
+        totalPages: 1,
+      },
+    }, { status: 200 });
   } catch (error) {
     console.error("Erro ao buscar usuários:", error);
     return NextResponse.json(

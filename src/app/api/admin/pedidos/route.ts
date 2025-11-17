@@ -9,14 +9,15 @@ export async function GET() {
     // Buscar todos os pedidos, populando os produtos
     const orders = await Order.find().sort({ createdAt: -1 }).lean();
 
-    if (!orders || orders.length === 0) {
-      return NextResponse.json(
-        { message: "Nenhum pedido encontrado." },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json(orders, { status: 200 });
+    return NextResponse.json({
+      orders,
+      pagination: {
+        page: 1,
+        limit: orders.length,
+        total: orders.length,
+        totalPages: 1,
+      },
+    }, { status: 200 });
   } catch (err) {
     console.error("Erro ao buscar pedidos:", err);
     return NextResponse.json(
