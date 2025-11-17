@@ -4,6 +4,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import dbConnect from "./db/mongoose";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
+import { loginRateLimiter } from "./rate-limit";
 
 export const authOptions: AuthOptions = {
   providers: [
@@ -19,6 +20,18 @@ export const authOptions: AuthOptions = {
       },
       async authorize(credentials) {
         if (!credentials) return null;
+
+        // Rate limiting baseado no email
+        const { success, reset } = await loginRateLimiter.limit(
+          credentials.email
+        );
+
+        if (!success) {
+          const waitTime = Math.ceil((reset - Date.now()) / 1000);
+          throw new Error(
+            `Muitas tentativas de login. Tente novamente em ${waitTime} segundos.`
+          );
+        }
 
         await dbConnect();
 
