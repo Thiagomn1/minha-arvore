@@ -21,7 +21,6 @@ export const authOptions: AuthOptions = {
       async authorize(credentials) {
         if (!credentials) return null;
 
-        // Rate limiting baseado no email
         const { success, reset } = await loginRateLimiter.limit(
           credentials.email
         );

@@ -28,8 +28,6 @@ export default function AdminUsersPage() {
     }
   }
 
-  console.log(data);
-
   return (
     <AdminLayout>
       <div id="toast-container" className="toast toast-top toast-end" />
@@ -68,7 +66,7 @@ export default function AdminUsersPage() {
                       <Button
                         variant="primary"
                         onClick={(e) => {
-                          e.stopPropagation(); // impede abrir modal
+                          e.stopPropagation();
                           handlePromote(u._id);
                         }}
                       >

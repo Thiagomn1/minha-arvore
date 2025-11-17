@@ -2,12 +2,10 @@ import "@testing-library/jest-dom";
 import { afterEach, vi } from "vitest";
 import { cleanup } from "@testing-library/react";
 
-// Cleanup after each test
 afterEach(() => {
   cleanup();
 });
 
-// Mock Next.js router
 vi.mock("next/navigation", () => ({
   useRouter: () => ({
     push: vi.fn(),
@@ -23,7 +21,6 @@ vi.mock("next/navigation", () => ({
   useParams: () => ({}),
 }));
 
-// Mock Next.js Image
 vi.mock("next/image", () => ({
   default: function Image(props: any) {
     return props;

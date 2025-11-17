@@ -12,11 +12,9 @@ export default function EditarPerfilPage() {
   const [menu, setMenu] = useState<"dados" | "endereco" | "senha">("dados");
   const updateUserMutation = useUpdateUser();
 
-  // Dados pessoais
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
 
-  // Endereço
   const [rua, setRua] = useState("");
   const [numero, setNumero] = useState("");
   const [bairro, setBairro] = useState("");
@@ -24,7 +22,6 @@ export default function EditarPerfilPage() {
   const [estado, setEstado] = useState<string | null>(null);
   const [cep, setCep] = useState("");
 
-  // Senha
   const [senhaAtual, setSenhaAtual] = useState("");
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmNovaSenha, setConfirmNovaSenha] = useState("");

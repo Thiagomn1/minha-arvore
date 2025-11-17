@@ -26,7 +26,6 @@ export default function UserOrdersPage() {
   const orders = data?.orders || [];
 
   useEffect(() => {
-    // Buscar endereços aproximados para cada pedido
     const fetchAddresses = async () => {
       for (const order of orders) {
         if (order.location && !addresses[order._id]) {

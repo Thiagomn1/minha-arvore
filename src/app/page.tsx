@@ -17,7 +17,6 @@ export default function Home() {
   const products = data?.products || [];
   const categories = data?.categories || [];
 
-  // Set active category when data loads
   if (categories.length > 0 && !active) {
     setActive(categories[0].id);
   }
@@ -87,7 +86,11 @@ export default function Home() {
           onChange={setActive}
         />
 
-        <ResponsiveGrid cols={3} gap={8} className="mt-8 w-full max-w-7xl mx-auto">
+        <ResponsiveGrid
+          cols={3}
+          gap={8}
+          className="mt-8 w-full max-w-7xl mx-auto"
+        >
           {products
             .filter(
               (p) =>

@@ -15,17 +15,31 @@ interface OrdersResponse {
   };
 }
 
-export function useUserOrders(userId: string, page: number = 1, limit: number = 10) {
+export function useUserOrders(
+  userId: string,
+  page: number = 1,
+  limit: number = 10
+) {
   return useQuery({
     queryKey: ["orders", "user", userId, { page, limit }],
     queryFn: async () => {
-      const response = await apiClient.get<Order[] | OrdersResponse>(`/pedidos/${userId}`, {
-        params: { page, limit },
-      });
+      const response = await apiClient.get<Order[] | OrdersResponse>(
+        `/pedidos/${userId}`,
+        {
+          params: { page, limit },
+        }
+      );
 
-      // Suporta tanto array direto quanto formato paginado
       if (Array.isArray(response)) {
-        return { orders: response, pagination: { page: 1, limit: response.length, total: response.length, totalPages: 1 } };
+        return {
+          orders: response,
+          pagination: {
+            page: 1,
+            limit: response.length,
+            total: response.length,
+            totalPages: 1,
+          },
+        };
       }
       return response;
     },
@@ -40,7 +54,7 @@ export function useOrderPhoto(orderId: string) {
       return apiClient.get<{ photoUrl: string }>(`/pedidos/${orderId}/foto`);
     },
     enabled: !!orderId,
-    retry: false, // Não retentar se foto não existir
+    retry: false,
   });
 }
 
@@ -66,7 +80,6 @@ export function useCreateOrder() {
       return apiClient.post<Order>("/checkout", data);
     },
     onSuccess: (_, variables) => {
-      // Invalidar cache de pedidos do usuário
       queryClient.invalidateQueries({
         queryKey: ["orders", "user", variables.userId],
       });
@@ -74,12 +87,13 @@ export function useCreateOrder() {
   });
 }
 
-// Hooks Admin
-export function useAdminOrders(options: {
-  page?: number;
-  limit?: number;
-  status?: string;
-} = {}) {
+export function useAdminOrders(
+  options: {
+    page?: number;
+    limit?: number;
+    status?: string;
+  } = {}
+) {
   const { page = 1, limit = 10, status } = options;
 
   return useQuery({
@@ -111,7 +125,13 @@ export function useUploadOrderImage() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ id, formData }: { id: string; formData: FormData }) => {
+    mutationFn: async ({
+      id,
+      formData,
+    }: {
+      id: string;
+      formData: FormData;
+    }) => {
       const response = await fetch(`/api/admin/pedidos/${id}/upload-image`, {
         method: "PUT",
         body: formData,

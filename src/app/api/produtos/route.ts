@@ -7,7 +7,6 @@ export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
 
-    // Validar e parsear parâmetros de paginação
     const paginationData = paginationSchema.safeParse({
       page: searchParams.get("page") || "1",
       limit: searchParams.get("limit") || "10",
@@ -23,16 +22,13 @@ export async function GET(req: Request) {
     const { page, limit } = paginationData.data;
     const category = searchParams.get("category") || undefined;
 
-    // Buscar apenas produtos disponíveis
     const result = await ProductService.getAvailableProducts(page, limit);
 
-    // Filtrar por categoria se fornecida
     let products = result.products;
     if (category) {
       products = products.filter((p) => p.category === category);
     }
 
-    // Gerar categorias únicas
     const categories = Array.from(
       new Set(products.map((p) => p.category || "geral"))
     ).map((c, index) => ({ id: index.toString(), name: c }));

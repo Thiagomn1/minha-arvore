@@ -80,7 +80,6 @@ export default function AdminProductsPage() {
         status: newStatus,
       });
 
-      // Atualiza produto selecionado no modal localmente
       setSelectedProduct((prev) =>
         prev ? { ...prev, status: newStatus as any } : prev
       );

@@ -30,7 +30,6 @@ class ApiClient {
   ): Promise<T> {
     const { params, ...fetchOptions } = options;
 
-    // Construir URL com query params
     let url = `${this.baseUrl}${endpoint}`;
     if (params) {
       const searchParams = new URLSearchParams();
@@ -40,7 +39,6 @@ class ApiClient {
       url += `?${searchParams.toString()}`;
     }
 
-    // Headers padrão
     const headers: HeadersInit = {
       "Content-Type": "application/json",
       ...fetchOptions.headers,
@@ -52,10 +50,8 @@ class ApiClient {
         headers,
       });
 
-      // Parse do response
       const data = await response.json();
 
-      // Tratamento de erros HTTP
       if (!response.ok) {
         throw new ApiError(
           response.status,
@@ -66,12 +62,10 @@ class ApiClient {
 
       return data;
     } catch (error) {
-      // Se já é um ApiError, apenas repassa
       if (error instanceof ApiError) {
         throw error;
       }
 
-      // Erros de rede ou parse
       throw new ApiError(
         500,
         error instanceof Error ? error.message : "Erro desconhecido"
@@ -124,10 +118,8 @@ class ApiClient {
   }
 }
 
-// Instância padrão do API client
 export const apiClient = new ApiClient("/api");
 
-// Helper para tratamento de erros em componentes
 export const handleApiError = (error: unknown): string => {
   if (error instanceof ApiError) {
     return error.message;
@@ -138,7 +130,6 @@ export const handleApiError = (error: unknown): string => {
   return "Erro desconhecido";
 };
 
-// Helper para validação de resposta de API
 export const isApiError = (error: unknown): error is ApiError => {
   return error instanceof ApiError;
 };

@@ -15,7 +15,6 @@ interface UsersResponse {
   };
 }
 
-// Hooks Admin
 export function useAdminUsers(page: number = 1, limit: number = 10) {
   return useQuery({
     queryKey: ["admin", "users", { page, limit }],

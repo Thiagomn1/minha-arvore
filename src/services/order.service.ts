@@ -13,7 +13,6 @@ export class OrderService {
   static async createOrder(userId: string, data: CreateOrderInput) {
     await dbConnect();
 
-    // Gera um ID único para o pedido
     const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
     const order = await Order.create({
@@ -82,7 +81,6 @@ export class OrderService {
     const { page = 1, limit = 10, status } = options;
     const skip = (page - 1) * limit;
 
-    // Construir query de filtros
     const query: any = {};
     if (status) query.status = status;
 

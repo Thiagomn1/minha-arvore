@@ -12,7 +12,6 @@ export function validatePassword(password: string): string | null {
     return null;
   }
 
-  // Retorna a primeira mensagem de erro do Zod
   return result.error.issues[0]?.message || "Senha inválida";
 }
 

@@ -1,12 +1,10 @@
 export function validateCNPJ(cnpj: string): boolean {
   if (!cnpj) return false;
 
-  // Remove caracteres não numéricos
   cnpj = cnpj.replace(/[^\d]+/g, "");
 
   if (cnpj.length !== 14) return false;
 
-  // Elimina CNPJs inválidos conhecidos
   if (/^(\d)\1+$/.test(cnpj)) return false;
 
   let tamanho = cnpj.length - 2;

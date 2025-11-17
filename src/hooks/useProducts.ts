@@ -46,7 +46,6 @@ export function useProduct(productId: string) {
   });
 }
 
-// Hooks Admin
 export function useAdminProducts(page: number = 1, limit: number = 10) {
   return useQuery({
     queryKey: ["admin", "products", { page, limit }],
@@ -66,7 +65,6 @@ export function useCreateProduct() {
       return apiClient.post<Product>("/admin/produtos", data);
     },
     onSuccess: () => {
-      // Invalidar cache de produtos
       queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
       queryClient.invalidateQueries({ queryKey: ["products"] });
     },

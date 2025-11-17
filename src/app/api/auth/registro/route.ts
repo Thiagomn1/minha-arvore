@@ -9,13 +9,11 @@ async function handler(request: Request) {
   try {
     const body = await request.json();
 
-    // Mapear consentimentoLGPD para aceitouTermos
     const dataToValidate = {
       ...body,
       aceitouTermos: body.consentimentoLGPD || body.aceitouTermos,
     };
 
-    // Validar dados com Zod
     const validationResult = registerUserSchema.safeParse(dataToValidate);
 
     if (!validationResult.success) {
@@ -29,7 +27,6 @@ async function handler(request: Request) {
       );
     }
 
-    // Criar usuário através do service
     const user = await UserService.registerUser(validationResult.data);
 
     return NextResponse.json(

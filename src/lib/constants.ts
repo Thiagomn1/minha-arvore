@@ -2,40 +2,36 @@
  * Constantes centralizadas do sistema
  */
 
-// Status de Produtos
 export const PRODUCT_STATUS = {
   AVAILABLE: "Disponível",
   UNAVAILABLE: "Indisponível",
 } as const;
 
-export type ProductStatus = typeof PRODUCT_STATUS[keyof typeof PRODUCT_STATUS];
+export type ProductStatus =
+  (typeof PRODUCT_STATUS)[keyof typeof PRODUCT_STATUS];
 
-// Status de Pedidos
 export const ORDER_STATUS = {
   PENDING: "Pendente",
   IN_PROGRESS: "Em Processo",
   PLANTED: "Plantado",
 } as const;
 
-export type OrderStatus = typeof ORDER_STATUS[keyof typeof ORDER_STATUS];
+export type OrderStatus = (typeof ORDER_STATUS)[keyof typeof ORDER_STATUS];
 
-// Roles de Usuário
 export const USER_ROLES = {
   USER: "User",
   ADMIN: "Admin",
 } as const;
 
-export type UserRole = typeof USER_ROLES[keyof typeof USER_ROLES];
+export type UserRole = (typeof USER_ROLES)[keyof typeof USER_ROLES];
 
-// Tipos de Pessoa
 export const PERSON_TYPE = {
   INDIVIDUAL: "PF",
   COMPANY: "PJ",
 } as const;
 
-export type PersonType = typeof PERSON_TYPE[keyof typeof PERSON_TYPE];
+export type PersonType = (typeof PERSON_TYPE)[keyof typeof PERSON_TYPE];
 
-// Categorias de Produtos
 export const PRODUCT_CATEGORIES = {
   NATIVE: "Nativa",
   FRUIT: "Frutífera",
@@ -43,9 +39,9 @@ export const PRODUCT_CATEGORIES = {
   EXOTIC: "Exótica",
 } as const;
 
-export type ProductCategory = typeof PRODUCT_CATEGORIES[keyof typeof PRODUCT_CATEGORIES];
+export type ProductCategory =
+  (typeof PRODUCT_CATEGORIES)[keyof typeof PRODUCT_CATEGORIES];
 
-// Mensagens de Erro Comuns
 export const ERROR_MESSAGES = {
   UNAUTHORIZED: "Não autorizado",
   FORBIDDEN: "Acesso negado",
@@ -59,16 +55,15 @@ export const ERROR_MESSAGES = {
   DATABASE_ERROR: "Erro ao conectar com o banco de dados",
 } as const;
 
-// Regex Patterns
 export const REGEX_PATTERNS = {
   CPF: /^\d{11}$/,
   CNPJ: /^\d{14}$/,
   CEP: /^\d{8}$/,
   PHONE: /^\d{10,11}$/,
-  PASSWORD: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{6,}$/,
+  PASSWORD:
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&#])[A-Za-z\d@$!%*?&#]{6,}$/,
 } as const;
 
-// Limites de Paginação
 export const PAGINATION = {
   DEFAULT_PAGE: 1,
   DEFAULT_LIMIT: 10,

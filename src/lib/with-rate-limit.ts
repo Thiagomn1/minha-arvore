@@ -16,7 +16,6 @@ export function withRateLimit(
       identifier
     );
 
-    // Adiciona headers de rate limit na resposta
     const headers = {
       "X-RateLimit-Limit": limit.toString(),
       "X-RateLimit-Remaining": remaining.toString(),
@@ -36,10 +35,8 @@ export function withRateLimit(
       );
     }
 
-    // Executa o handler original
     const response = await handler(req, context);
 
-    // Adiciona headers de rate limit na resposta bem-sucedida
     Object.entries(headers).forEach(([key, value]) => {
       response.headers.set(key, value);
     });

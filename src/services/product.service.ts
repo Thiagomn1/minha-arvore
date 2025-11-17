@@ -21,7 +21,6 @@ export class ProductService {
     const { page = 1, limit = 10, category, status } = options;
     const skip = (page - 1) * limit;
 
-    // Construir query de filtros
     const query: any = {};
     if (category) query.category = category;
     if (status) query.status = status;

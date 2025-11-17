@@ -23,7 +23,6 @@ export default function ProductsPage() {
   const prevSlide = () => setSlide((s) => (s === 0 ? totalSlides - 1 : s - 1));
   const nextSlide = () => setSlide((s) => (s === totalSlides - 1 ? 0 : s + 1));
 
-  // Set active category when data loads
   if (categories.length > 0 && !active) {
     setActive(categories[0].id);
   }

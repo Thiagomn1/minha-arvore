@@ -35,7 +35,6 @@ export default function CO2() {
 
     const total = emissaoEnergia + emissaoGLP + emissaoGas + emissaoTransporte;
 
-    // estimativa de árvores (uma árvore captura aprox. 0.165 tCO₂/ano)
     const arvoresNecessarias = Math.ceil(total / 0.165);
 
     setResultado(

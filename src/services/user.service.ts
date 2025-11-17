@@ -19,16 +19,13 @@ export class UserService {
   static async registerUser(data: RegisterUserInput) {
     await dbConnect();
 
-    // Verifica se email já existe
     const existingUser = await User.findOne({ email: data.email });
     if (existingUser) {
       throw new Error("Email já cadastrado");
     }
 
-    // Hash da senha
     const hashedPassword = await bcrypt.hash(data.password, 10);
 
-    // Cria o usuário
     const user = await User.create({
       name: data.name,
       email: data.email,
@@ -41,7 +38,6 @@ export class UserService {
       aceitouTermos: data.aceitouTermos,
     });
 
-    // Remove a senha do retorno
     const userObject = user.toObject();
     delete userObject.password;
 
@@ -85,7 +81,6 @@ export class UserService {
 
     if (data.nome) user.name = data.nome;
     if (data.email) {
-      // Verifica se o novo email já está em uso
       const existingUser = await User.findOne({ email: data.email, _id: { $ne: userId } });
       if (existingUser) {
         throw new Error("Email já está em uso");
@@ -141,13 +136,11 @@ export class UserService {
       throw new Error(ERROR_MESSAGES.USER_NOT_FOUND);
     }
 
-    // Verifica senha atual
     const isMatch = await bcrypt.compare(data.senhaAtual, user.password);
     if (!isMatch) {
       throw new Error("Senha atual incorreta");
     }
 
-    // Hash da nova senha
     const hashedPassword = await bcrypt.hash(data.novaSenha, 10);
     user.password = hashedPassword;
 

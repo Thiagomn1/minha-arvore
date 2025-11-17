@@ -8,7 +8,7 @@ type CidadeOption = {
 
 interface SelectCidadeProps {
   uf: string | null;
-  onChange: (cidade: string) => void; // 👈 tipado corretamente
+  onChange: (cidade: string) => void;
 }
 
 export const SelectCidade = ({ uf, onChange }: SelectCidadeProps) => {
@@ -21,7 +21,7 @@ export const SelectCidade = ({ uf, onChange }: SelectCidadeProps) => {
 
   const handleCidadeUpdate = (event: SingleValue<CidadeOption>) => {
     if (!event) return;
-    onChange(event.label); // 👈 garante string
+    onChange(event.label);
   };
 
   return (

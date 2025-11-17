@@ -10,10 +10,9 @@ export async function POST(req: Request) {
 
     const { products, userId, location } = body;
 
-    // Mapear location para o formato esperado
     const orderData = {
       products,
-      total: 0, // Será calculado
+      total: 0,
       location: location
         ? {
             lat: location.latitude || location.lat,
@@ -22,7 +21,6 @@ export async function POST(req: Request) {
         : undefined,
     };
 
-    // Buscar produtos do DB para calcular o total
     const productIds = products.map((p: any) => p._id || p.productId);
     const dbProductsPromises = productIds.map((id: string) =>
       ProductService.getProductById(id)
@@ -36,7 +34,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Calcular total e preparar produtos para o pedido
     let total = 0;
     const orderProducts = products.map((p: any) => {
       const product = dbProducts.find(
@@ -60,7 +57,6 @@ export async function POST(req: Request) {
     orderData.products = orderProducts;
     orderData.total = total;
 
-    // Validar dados com Zod
     const validationResult = createOrderSchema.safeParse(orderData);
 
     if (!validationResult.success) {
@@ -73,7 +69,6 @@ export async function POST(req: Request) {
       );
     }
 
-    // Criar pedido através do service
     const newOrder = await OrderService.createOrder(
       userId,
       validationResult.data

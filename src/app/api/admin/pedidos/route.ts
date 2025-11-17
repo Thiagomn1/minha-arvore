@@ -6,7 +6,6 @@ export async function GET() {
   try {
     await dbConnect();
 
-    // Buscar todos os pedidos, populando os produtos
     const orders = await Order.find().sort({ createdAt: -1 }).lean();
 
     return NextResponse.json({
