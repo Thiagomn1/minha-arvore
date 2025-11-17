@@ -11,6 +11,7 @@ import {
   TruckIcon,
 } from "@heroicons/react/24/solid";
 import Button from "@/components/ui/Button";
+import Card from "@/components/ui/Card";
 
 const fatores = {
   energiaEletrica: 0.000051, // ton CO2 / kWh (Brasil média aproximada)
@@ -61,7 +62,7 @@ export default function CO2() {
               necessárias para compensar sua pegada de carbono.
             </p>
           </div>
-          <div className="flex-shrink-0">
+          <div className="shrink-0">
             <Image
               src="/mudaco2.jpeg"
               alt="Natureza e árvores"
@@ -76,8 +77,8 @@ export default function CO2() {
       {/* Calculadora */}
       <div className="max-w-5xl flex flex-wrap gap-6 mx-auto p-6 justify-center">
         {/* Energia Elétrica */}
-        <div className="card shadow-lg w-96 h-64">
-          <div className="card-body bg-base-100">
+        <Card variant="elevated" className="w-96 h-64">
+          <div className="card-body">
             <h2 className="card-title text-sky-900">
               <BoltIcon className="w-8 h-8 text-sky-700" />
               Energia Elétrica da Rede
@@ -97,11 +98,11 @@ export default function CO2() {
               </div>
             </label>
           </div>
-        </div>
+        </Card>
 
         {/* GLP */}
-        <div className="card shadow-lg w-96 h-64">
-          <div className="card-body bg-base-100">
+        <Card variant="elevated" className="w-96 h-64">
+          <div className="card-body">
             <h2 className="card-title text-sky-900">
               <FireIcon className="w-8 h-8 text-orange-600" />
               Gás GLP (Botijão)
@@ -121,11 +122,11 @@ export default function CO2() {
               </div>
             </label>
           </div>
-        </div>
+        </Card>
 
         {/* Gás Natural */}
-        <div className="card shadow-lg w-96 h-64">
-          <div className="card-body bg-base-100">
+        <Card variant="elevated" className="w-96 h-64">
+          <div className="card-body">
             <h2 className="card-title text-sky-900">
               <BeakerIcon className="w-8 h-8 text-green-600" />
               Gás Natural (Encanado)
@@ -147,11 +148,11 @@ export default function CO2() {
               </div>
             </label>
           </div>
-        </div>
+        </Card>
 
         {/* Transporte Terrestre */}
-        <div className="card shadow-lg w-96 h-64">
-          <div className="card-body bg-base-100">
+        <Card variant="elevated" className="w-96 h-64">
+          <div className="card-body">
             <h2 className="card-title text-sky-900">
               <TruckIcon className="w-8 h-8 text-emerald-600" />
               Transporte Terrestre
@@ -171,7 +172,7 @@ export default function CO2() {
               </div>
             </label>
           </div>
-        </div>
+        </Card>
       </div>
 
       {/* Botão Calcular */}

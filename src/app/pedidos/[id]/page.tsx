@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { getAddressFromCoords } from "@/lib/utils/geocode";
 import Button from "@/components/ui/Button";
+import Modal from "@/components/ui/Modal";
 import dynamic from "next/dynamic";
 import { useUserOrders } from "@/hooks/useOrders";
 
@@ -161,23 +162,22 @@ export default function UserOrdersPage() {
       )}
 
       {/* Modal da foto da muda */}
-      {selectedPhoto && (
-        <dialog open className="modal">
-          <div className="modal-box max-w-lg">
-            <h3 className="font-bold text-lg mb-2">Foto da Muda</h3>
-            <Image
-              src={selectedPhoto}
-              alt="Foto da muda"
-              width={600}
-              height={400}
-              className="rounded-md object-cover w-full"
-            />
-            <div className="modal-action">
-              <Button onClick={() => setSelectedPhoto(null)}>Fechar</Button>
-            </div>
-          </div>
-        </dialog>
-      )}
+      <Modal
+        isOpen={!!selectedPhoto}
+        onClose={() => setSelectedPhoto(null)}
+        title="Foto da Muda"
+        size="md"
+      >
+        {selectedPhoto && (
+          <Image
+            src={selectedPhoto}
+            alt="Foto da muda"
+            width={600}
+            height={400}
+            className="rounded-md object-cover w-full"
+          />
+        )}
+      </Modal>
     </div>
   );
 }

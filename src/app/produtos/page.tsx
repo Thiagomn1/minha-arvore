@@ -3,6 +3,7 @@ import { useState } from "react";
 import Image from "next/image";
 import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
+import ResponsiveGrid from "@/components/ui/ResponsiveGrid";
 import { useCart } from "@/context/useCart";
 import { Product } from "@/types";
 import Link from "next/link";
@@ -96,7 +97,7 @@ export default function ProductsPage() {
       />
 
       {/* Grid de produtos */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8 mt-8">
+      <ResponsiveGrid cols={4} gap={8} className="mt-8">
         {products
           .filter(
             (p) => categories.find((c) => c.id === active)?.name === p.category
@@ -104,7 +105,7 @@ export default function ProductsPage() {
           .map((p) => (
             <ProductCard product={p} key={p._id} onAdd={onAdd} />
           ))}
-      </div>
+      </ResponsiveGrid>
     </div>
   );
 }

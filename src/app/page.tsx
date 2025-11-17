@@ -2,6 +2,7 @@
 import { useState } from "react";
 import ProductCard from "@/components/ProductCard";
 import CategoryList from "@/components/CategoryList";
+import ResponsiveGrid from "@/components/ui/ResponsiveGrid";
 import { useCart } from "@/context/useCart";
 import { Product } from "@/types";
 import Hero from "../components/ui/Hero";
@@ -86,7 +87,7 @@ export default function Home() {
           onChange={setActive}
         />
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mt-8 w-full max-w-7xl mx-auto">
+        <ResponsiveGrid cols={3} gap={8} className="mt-8 w-full max-w-7xl mx-auto">
           {products
             .filter(
               (p) =>
@@ -95,7 +96,7 @@ export default function Home() {
             .map((p) => (
               <ProductCard product={p} key={p._id} onAdd={onAdd} />
             ))}
-        </div>
+        </ResponsiveGrid>
       </div>
     </>
   );
