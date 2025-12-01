@@ -2,13 +2,15 @@ import { NextResponse } from "next/server";
 import { OrderService } from "@/services/order.service";
 import { paginationSchema } from "@/lib/validations/schemas";
 import { handleApiError } from "@/lib/api-client";
+import { withRateLimit } from "@/lib/with-rate-limit";
+import { apiRateLimiter } from "@/lib/rate-limit";
 
 /**
  * GET /api/pedidos/[id]
  * Busca pedidos de um usuário
  * [id] = userId
  */
-export async function GET(
+async function handler(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -45,3 +47,5 @@ export async function GET(
     );
   }
 }
+
+export const GET = withRateLimit(handler, apiRateLimiter);

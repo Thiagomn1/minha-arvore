@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { ProductService } from "@/services/product.service";
 import { paginationSchema } from "@/lib/validations/schemas";
 import { handleApiError } from "@/lib/api-client";
+import { withRateLimit } from "@/lib/with-rate-limit";
+import { apiRateLimiter } from "@/lib/rate-limit";
 
-export async function GET(req: Request) {
+async function handler(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
 
@@ -54,3 +56,5 @@ export async function GET(req: Request) {
     );
   }
 }
+
+export const GET = withRateLimit(handler, apiRateLimiter);

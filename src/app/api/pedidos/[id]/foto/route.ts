@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/db/mongoose";
 import Order from "@/models/Order";
+import { withRateLimit } from "@/lib/with-rate-limit";
+import { apiRateLimiter } from "@/lib/rate-limit";
 
-export async function GET(
+async function handler(
   req: Request,
   { params }: { params: Promise<{ id: string }> }
 ) {
@@ -28,3 +30,5 @@ export async function GET(
     );
   }
 }
+
+export const GET = withRateLimit(handler, apiRateLimiter);

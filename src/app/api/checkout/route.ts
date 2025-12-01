@@ -3,8 +3,10 @@ import { OrderService } from "@/services/order.service";
 import { ProductService } from "@/services/product.service";
 import { createOrderSchema } from "@/lib/validations/schemas";
 import { handleApiError } from "@/lib/api-client";
+import { withRateLimit } from "@/lib/with-rate-limit";
+import { apiRateLimiter } from "@/lib/rate-limit";
 
-export async function POST(req: Request) {
+async function handler(req: Request) {
   try {
     const body = await req.json();
 
@@ -83,3 +85,5 @@ export async function POST(req: Request) {
     );
   }
 }
+
+export const POST = withRateLimit(handler, apiRateLimiter);
