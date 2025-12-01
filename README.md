@@ -1,243 +1,273 @@
-# 🚀 Quick Start - Minha Árvore
+# 🌳 Minha Árvore
 
-Guia rápido para começar a desenvolver.
+E-commerce de mudas nativas com sistema de rastreamento de plantio e cálculo de compensação de CO₂.
 
-## ⚡ Opção 1: Docker (Recomendado)
+## 📋 Tecnologias
 
-A forma mais rápida de começar:
+- **Framework:** Next.js 16 (App Router)
+- **Database:** MongoDB + Mongoose
+- **Auth:** NextAuth.js
+- **Cache/Rate Limit:** Redis (Upstash)
+- **Styling:** Tailwind CSS + DaisyUI
+- **State:** Zustand + React Query
+- **Maps:** Leaflet + Mapbox
+- **Tests:** Vitest + Testing Library
+
+## ⚡ Quick Start
+
+### Com Docker (Recomendado)
 
 ```bash
-# 1. Clone o repositório
+# Clone o repositório
 git clone <repo-url>
 cd minha-arvore
 
-# 2. Inicie tudo com um comando
-./scripts/docker-start.sh
+# Inicie tudo (MongoDB + Redis + App)
+npm run docker:start
 
-# 3. Acesse
-open http://localhost:3000
+# Acesse http://localhost:3000
 ```
 
-**Pronto! 🎉** MongoDB, Redis e App estão rodando.
-
-### Comandos úteis
+### Desenvolvimento Local
 
 ```bash
-# Ver logs
-docker-compose logs -f app
-
-# Parar tudo (mantém dados)
-./scripts/docker-stop.sh
-
-# Parar e limpar tudo
-./scripts/docker-stop.sh --clean
-
-# Reiniciar app
-docker-compose restart app
-
-# Acessar MongoDB
-docker-compose exec mongodb mongosh
-
-# Acessar Redis
-docker-compose exec redis redis-cli
-```
-
-## 💻 Opção 2: Local Development
-
-Para desenvolvimento sem Docker:
-
-```bash
-# 1. Instalar dependências
+# Instale dependências
 npm install
 
-# 2. Iniciar MongoDB e Redis (via Docker)
+# Suba apenas banco e cache
 docker-compose up -d mongodb redis
 
-# 3. Configurar .env
+# Configure ambiente
 cp .env.example .env
-# Edite .env com:
-# MONGODB_URI=mongodb://localhost:27017/minha-arvore
-# REDIS_URL=redis://localhost:6379
+# Edite MONGODB_URI, NEXTAUTH_SECRET, REDIS_URL
 
-# 4. Iniciar app em modo dev
+# Inicie app
 npm run dev
-
-# 5. Acesse
-open http://localhost:3000
 ```
 
-## 🔐 Variáveis de Ambiente
+## 🔧 Configuração
 
-### Essenciais
+### Variáveis de Ambiente
 
 ```env
-# Banco de dados
-MONGODB_URI=mongodb://mongodb:27017/minha-arvore
+# Database
+MONGODB_URI=mongodb://localhost:27017/minha-arvore
 
-# Autenticação
-NEXTAUTH_SECRET=seu-secret-aqui-256-bits
+# Auth (gere com: openssl rand -base64 32)
+NEXTAUTH_SECRET=your-secret-here
 NEXTAUTH_URL=http://localhost:3000
 
-# Rate Limiting (escolha uma)
-REDIS_URL=redis://redis:6379                    # Docker/Local
-# UPSTASH_REDIS_REST_URL=https://...            # Produção
+# Rate Limiting
+REDIS_URL=redis://localhost:6379              # Local/Docker
+# UPSTASH_REDIS_REST_URL=https://...          # Produção (opcional)
 # UPSTASH_REDIS_REST_TOKEN=...
 ```
 
-### Gerar NEXTAUTH_SECRET
+### Scripts Disponíveis
 
 ```bash
-openssl rand -base64 32
+npm run dev              # Desenvolvimento (Turbopack)
+npm run build            # Build de produção
+npm start                # Rodar build
+npm test                 # Testes
+npm run lint             # ESLint
+
+# Docker
+npm run docker:start     # Iniciar ambiente completo
+npm run docker:stop      # Parar (mantém dados)
+npm run docker:clean     # Parar e limpar volumes
+npm run docker:logs      # Ver logs
+npm run docker:restart   # Reiniciar app
 ```
 
-## 🛡️ Rate Limiting
+## 🏗️ Estrutura do Projeto
 
-O projeto já vem com rate limiting configurado:
-
-| Endpoint  | Limite       | Janela |
-| --------- | ------------ | ------ |
-| Login     | 5 tentativas | 15 min |
-| Registro  | 3 cadastros  | 1 hora |
-| API Geral | 100 requests | 1 min  |
-
-**Testar rate limit:**
-
-```bash
-# Login (após 5 tentativas será bloqueado)
-for i in {1..6}; do
-  curl -X POST http://localhost:3000/api/auth/callback/credentials \
-    -H "Content-Type: application/json" \
-    -d '{"email":"test@test.com","password":"wrong"}'
-done
+```
+src/
+├── app/                    # Next.js App Router
+│   ├── api/               # API Routes
+│   ├── admin/             # Páginas admin
+│   ├── login/             # Autenticação
+│   └── ...
+├── components/            # Componentes React
+│   ├── ui/               # Componentes reutilizáveis
+│   └── layouts/          # Layouts
+├── hooks/                 # React Hooks customizados
+├── lib/                   # Utilidades
+│   ├── rate-limit.ts     # Configuração rate limiting
+│   ├── auth.ts           # NextAuth config
+│   └── ...
+├── models/                # Mongoose models
+├── services/              # Lógica de negócio
+└── types/                 # TypeScript types
 ```
 
-**Ver dados no Redis:**
+## 🛡️ Segurança & Rate Limiting
 
-```bash
-docker-compose exec redis redis-cli
-> KEYS *
-> GET "@upstash/ratelimit:login:test@test.com"
+O projeto implementa proteção contra abuso com rate limiting em três níveis:
+
+| Endpoint    | Limite       | Janela | Identificador |
+| ----------- | ------------ | ------ | ------------- |
+| Login       | 5 tentativas | 15 min | Email         |
+| Registro    | 3 cadastros  | 1 hora | IP            |
+| API Pública | 100 requests | 1 min  | IP            |
+
+**Rotas protegidas:**
+
+- ✅ Login/Registro (autenticação)
+- ✅ APIs públicas (produtos, checkout, pedidos)
+- ✅ Rotas admin (middleware + rate limit)
+
+**Como funciona:**
+
+```typescript
+// Sliding window algorithm via Upstash
+// Persiste no Redis, funciona em múltiplas instâncias
+export const apiRateLimiter = new Ratelimit({
+  redis,
+  limiter: Ratelimit.slidingWindow(100, "1 m"),
+});
 ```
+
+[📖 Documentação completa](RATE_LIMITING.md) | [🐳 Setup Docker](DOCKER.md)
 
 ## 🧪 Testing
 
 ```bash
-# Rodar testes
-npm test
-
-# Testes em watch mode
-npm run test:watch
-
-# Coverage
-npm run test:coverage
+npm test                 # Rodar todos os testes
+npm run test:ui          # Interface visual
+npm run test:coverage    # Cobertura de código
 ```
 
-## 📦 Build
+**Testar rate limiting:**
 
 ```bash
-# Build de produção
-npm run build
+# 6 tentativas de login (5º será bloqueada)
+for i in {1..6}; do
+  curl -X POST http://localhost:3000/api/auth/callback/credentials \
+    -d '{"email":"test@test.com","password":"wrong"}'
+done
 
-# Rodar build
-npm start
-
-# Docker build
-docker-compose up -d --build
+# Verificar no Redis
+docker-compose exec redis redis-cli
+> KEYS "*ratelimit*"
 ```
 
-**Configurar variáveis:**
+## 🚀 Deploy
 
-- `MONGODB_URI`: MongoDB Atlas
-- `NEXTAUTH_SECRET`: Secret gerado
-- `UPSTASH_REDIS_REST_URL`: Upstash Redis
-- `UPSTASH_REDIS_REST_TOKEN`: Token Upstash
+### Vercel (Recomendado)
+
+```bash
+vercel
+```
+
+**Configure:**
+
+- `MONGODB_URI` → MongoDB Atlas
+- `NEXTAUTH_SECRET` → Secret gerado
+- `UPSTASH_REDIS_REST_URL` → Upstash Redis
+- `UPSTASH_REDIS_REST_TOKEN` → Token
 
 ### Docker (VPS/Cloud)
 
 ```bash
-# Build e push para registry
 docker build -t minha-arvore .
-docker tag minha-arvore registry.com/minha-arvore
-docker push registry.com/minha-arvore
-
-# Deploy
 docker-compose up -d
 ```
 
 ## 🐛 Troubleshooting
 
-### Porta já em uso
+<details>
+<summary>Porta já em uso</summary>
 
 ```bash
-# Ver o que está usando a porta
 lsof -i :3000
-
-# Matar processo
 kill -9 <PID>
-
-# Ou mudar porta no docker-compose.yml
+# ou mude a porta no docker-compose.yml
 ```
 
-### MongoDB não conecta
+</details>
+
+<details>
+<summary>MongoDB não conecta</summary>
 
 ```bash
-# Verificar se está rodando
 docker-compose ps mongodb
-
-# Ver logs
 docker-compose logs mongodb
-
-# Reiniciar
 docker-compose restart mongodb
 ```
 
-### Redis não conecta
+</details>
+
+<details>
+<summary>Redis não conecta</summary>
 
 ```bash
-# Testar conexão
 docker-compose exec redis redis-cli PING
-
-# Ver logs
 docker-compose logs redis
-
-# Reiniciar
 docker-compose restart redis
 ```
 
-### Build falha
+</details>
+
+<details>
+<summary>Build falha</summary>
 
 ```bash
-# Limpar cache
 rm -rf .next node_modules
 npm install
 npm run build
-
-# Docker rebuild
-docker-compose down
-docker-compose build --no-cache
-docker-compose up -d
 ```
 
-## 💡 Dicas
+</details>
 
-1. **Use o Docker** para desenvolvimento (evita problemas de ambiente)
-2. **Configure Git hooks** para rodar linter antes de commit
-3. **Ative ESLint** na sua IDE
-4. **Use TypeScript strict mode**
-5. **Teste rate limiting** antes de fazer deploy
+## 📚 Funcionalidades
+
+### Para Usuários
+
+- 🛒 Compra de mudas nativas
+- 📍 Rastreamento de plantio (mapa)
+- 🌍 Cálculo de compensação de CO₂
+- 📊 Dashboard de pedidos
+- 👤 Gerenciamento de perfil
+
+### Para Administradores
+
+- 📦 Gestão de produtos
+- 📋 Gestão de pedidos
+- 👥 Gestão de usuários
+- 📸 Upload de fotos de plantio
+- 📊 Dashboard admin
+
+## 🗺️ Roadmap
+
+- [ ] Integração com gateway de pagamento
+- [ ] Sistema de pontos/gamificação
+- [ ] App mobile (React Native)
+- [ ] Certificados de plantio (PDF)
+- [ ] Dashboard analytics avançado
+- [ ] API pública para parceiros
 
 ## 🤝 Contribuindo
 
-```bash
-# 1. Fork o projeto
-# 2. Crie uma branch
-git checkout -b feature/minha-feature
+1. Fork o projeto
+2. Crie sua branch (`git checkout -b feature/amazing`)
+3. Commit suas mudanças (`git commit -m 'feat: add amazing feature'`)
+4. Push para branch (`git push origin feature/amazing`)
+5. Abra um Pull Request
 
-# 3. Commit suas mudanças
-git commit -m "feat: adiciona minha feature"
+**Padrão de commits:** [Conventional Commits](https://www.conventionalcommits.org/)
 
-# 4. Push para o branch
-git push origin feature/minha-feature
-
-# 5. Abra um Pull Request
 ```
+feat: nova funcionalidade
+fix: correção de bug
+docs: documentação
+style: formatação
+refactor: refatoração
+test: testes
+chore: manutenção
+```
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Veja [LICENSE](LICENSE) para mais detalhes.
