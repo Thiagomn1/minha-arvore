@@ -1,12 +1,22 @@
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis";
 
-const redis = process.env.UPSTASH_REDIS_REST_URL
-  ? new Redis({
+function createRedisClient() {
+  if (process.env.UPSTASH_REDIS_REST_URL && process.env.UPSTASH_REDIS_REST_TOKEN) {
+    return new Redis({
       url: process.env.UPSTASH_REDIS_REST_URL,
-      token: process.env.UPSTASH_REDIS_REST_TOKEN || "",
-    })
-  : undefined;
+      token: process.env.UPSTASH_REDIS_REST_TOKEN,
+    });
+  }
+
+  if (process.env.REDIS_URL) {
+    return Redis.fromEnv();
+  }
+
+  return undefined;
+}
+
+const redis = createRedisClient();
 
 export const loginRateLimiter = redis
   ? new Ratelimit({
