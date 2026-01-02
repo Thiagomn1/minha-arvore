@@ -12,6 +12,10 @@ interface UsersResponse {
   };
 }
 
+interface UserResponse {
+  user: User;
+}
+
 export function useAdminUsers(page: number = 1, limit: number = 10) {
   return useQuery({
     queryKey: ["admin", "users", { page, limit }],
@@ -19,6 +23,15 @@ export function useAdminUsers(page: number = 1, limit: number = 10) {
       return apiClient.get<UsersResponse>("/admin/usuarios", {
         params: { page, limit },
       });
+    },
+  });
+}
+
+export function useCurrentUser() {
+  return useQuery({
+    queryKey: ["user", "current"],
+    queryFn: async () => {
+      return apiClient.get<UserResponse>("/usuario");
     },
   });
 }

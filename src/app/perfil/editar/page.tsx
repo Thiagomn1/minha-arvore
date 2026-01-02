@@ -1,16 +1,19 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { UserIcon, HomeIcon, KeyIcon } from "@heroicons/react/24/outline";
 import Button from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { SelectEstado } from "@/components/ui/SelectEstado";
 import { SelectCidade } from "@/components/ui/SelectCidade";
 import { useToast } from "@/hooks/useToast";
-import { useUpdateUser } from "@/hooks/useUsers";
+import { useUpdateUser, useCurrentUser } from "@/hooks/useUsers";
 
 export default function EditarPerfilPage() {
   const [menu, setMenu] = useState<"dados" | "endereco" | "senha">("dados");
   const updateUserMutation = useUpdateUser();
+  const { data: userData, isLoading } = useCurrentUser();
+
+  const user = useMemo(() => userData?.user as any, [userData]);
 
   const [nome, setNome] = useState("");
   const [email, setEmail] = useState("");
@@ -28,13 +31,31 @@ export default function EditarPerfilPage() {
 
   const { showToast } = useToast();
 
+  const currentNome = nome || user?.name || "";
+  const currentEmail = email || user?.email || "";
+  const currentRua = rua || user?.endereco?.rua || "";
+  const currentNumero = numero || user?.endereco?.numero || "";
+  const currentBairro = bairro || user?.endereco?.bairro || "";
+  const currentCidade = cidade || user?.endereco?.cidade || "";
+  const currentEstado = estado || user?.endereco?.estado || null;
+  const currentCep = cep || user?.endereco?.cep || "";
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     let payload = {};
-    if (menu === "dados") payload = { nome, email };
+    if (menu === "dados") payload = { nome: currentNome, email: currentEmail };
     else if (menu === "endereco")
-      payload = { endereco: { rua, numero, bairro, cidade, estado, cep } };
+      payload = {
+        endereco: {
+          rua: currentRua,
+          numero: currentNumero,
+          bairro: currentBairro,
+          cidade: currentCidade,
+          estado: currentEstado,
+          cep: currentCep
+        }
+      };
     else if (menu === "senha") {
       if (novaSenha !== confirmNovaSenha) {
         showToast("As senhas não coincidem", "error");
@@ -51,6 +72,14 @@ export default function EditarPerfilPage() {
       showToast(message, "error");
     }
   };
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-base-100">
+        <span className="loading loading-spinner loading-lg"></span>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-base-100">
@@ -109,14 +138,14 @@ export default function EditarPerfilPage() {
             <Input
               label="Nome completo"
               placeholder="Nome completo"
-              value={nome}
+              value={currentNome}
               onChange={(e) => setNome(e.target.value)}
             />
             <Input
               label="Email"
               type="email"
               placeholder="Email"
-              value={email}
+              value={currentEmail}
               onChange={(e) => setEmail(e.target.value)}
             />
             <Button
@@ -134,36 +163,40 @@ export default function EditarPerfilPage() {
             <h2 className="text-xl font-semibold mb-4">Editar Endereço</h2>
             <Input
               label="Rua"
-              value={rua}
+              value={currentRua}
               onChange={(e) => setRua(e.target.value)}
             />
             <Input
               label="Número"
-              value={numero}
+              value={currentNumero}
               onChange={(e) => setNumero(e.target.value)}
             />
             <Input
               label="Bairro"
-              value={bairro}
+              value={currentBairro}
               onChange={(e) => setBairro(e.target.value)}
             />
 
             <div>
               <label className="block text-sm font-medium mb-1">Estado</label>
-              <SelectEstado onChange={(uf) => setEstado(uf)} />
+              <SelectEstado
+                value={currentEstado}
+                onChange={(uf) => setEstado(uf)}
+              />
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-1">Cidade</label>
               <SelectCidade
-                uf={estado}
+                uf={currentEstado}
+                value={currentCidade}
                 onChange={(cidade) => setCidade(cidade)}
               />
             </div>
 
             <Input
               label="CEP"
-              value={cep}
+              value={currentCep}
               onChange={(e) => setCep(e.target.value)}
             />
             <Button

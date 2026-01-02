@@ -1,5 +1,5 @@
 "use client";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import Select, { SingleValue } from "react-select";
 import { useEstados } from "@/hooks/useEstados";
 
@@ -10,9 +10,10 @@ type EstadoOption = {
 
 interface SelectEstadoProps {
   onChange: (uf: string | null) => void;
+  value?: string | null;
 }
 
-export const SelectEstado = ({ onChange }: SelectEstadoProps) => {
+export const SelectEstado = ({ onChange, value }: SelectEstadoProps) => {
   const { estados } = useEstados();
   const [selectedEstado, setSelectedEstado] = useState<number | null>(null);
 
@@ -21,8 +22,17 @@ export const SelectEstado = ({ onChange }: SelectEstadoProps) => {
     label: estado.nome,
   }));
 
+  const currentSelectedId = useMemo(() => {
+    if (selectedEstado) return selectedEstado;
+    if (value && estados.length > 0) {
+      const estado = estados.find((e) => e.sigla === value);
+      return estado?.id || null;
+    }
+    return null;
+  }, [selectedEstado, value, estados]);
+
   const selectedOptionEstado = estadoOptions.find(
-    (e) => e.value === selectedEstado
+    (e) => e.value === currentSelectedId
   );
 
   const handleEstadoUpdate = (event: SingleValue<EstadoOption>) => {
