@@ -6,8 +6,7 @@ import Link from "next/link";
 export default function Sobre() {
   return (
     <main className="w-full min-h-screen bg-base-100 text-base-content">
-      {/* Hero Section */}
-      <section className="hero min-h-[70vh] bg-gradient-to-r from-green-100 to-green-300">
+      <section className="hero min-h-[70vh] bg-linear-to-r from-green-100 to-green-300">
         <div className="hero-content flex-col lg:flex-row-reverse gap-10">
           <Image
             src="/mudaco2.jpeg"
@@ -33,7 +32,6 @@ export default function Sobre() {
         </div>
       </section>
 
-      {/* Impacto Section */}
       <section className="py-16 px-6 md:px-20 bg-base-200">
         <h2 className="text-3xl font-bold text-center text-green-600 mb-10">
           Por que isso é importante?
@@ -74,7 +72,7 @@ export default function Sobre() {
         </div>
       </section>
 
-      <section className="py-16 px-6 md:px-20 text-center bg-gradient-to-r from-green-200 to-green-200">
+      <section className="py-16 px-6 md:px-20 text-center bg-linear-to-r from-green-200 to-green-200">
         <h2 className="text-3xl font-bold text-black mb-6">
           Faça parte dessa mudança!
         </h2>

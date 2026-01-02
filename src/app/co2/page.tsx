@@ -47,7 +47,6 @@ export default function CO2() {
 
   return (
     <div className=" min-h-screen flex flex-col mb-4">
-      {/* Hero Section */}
       <div className="hero bg-green-50 py-12 px-6">
         <div className="hero-content flex-col lg:flex-row gap-8 max-w-5xl">
           <div>
@@ -73,9 +72,7 @@ export default function CO2() {
         </div>
       </div>
 
-      {/* Calculadora */}
       <div className="max-w-5xl flex flex-wrap gap-6 mx-auto p-6 justify-center">
-        {/* Energia Elétrica */}
         <Card variant="elevated" className="w-96 h-64">
           <div className="card-body">
             <h2 className="card-title text-sky-900">
@@ -99,7 +96,6 @@ export default function CO2() {
           </div>
         </Card>
 
-        {/* GLP */}
         <Card variant="elevated" className="w-96 h-64">
           <div className="card-body">
             <h2 className="card-title text-sky-900">
@@ -123,7 +119,6 @@ export default function CO2() {
           </div>
         </Card>
 
-        {/* Gás Natural */}
         <Card variant="elevated" className="w-96 h-64">
           <div className="card-body">
             <h2 className="card-title text-sky-900">
@@ -149,7 +144,6 @@ export default function CO2() {
           </div>
         </Card>
 
-        {/* Transporte Terrestre */}
         <Card variant="elevated" className="w-96 h-64">
           <div className="card-body">
             <h2 className="card-title text-sky-900">
@@ -174,14 +168,12 @@ export default function CO2() {
         </Card>
       </div>
 
-      {/* Botão Calcular */}
       <div className="flex flex-col items-center">
         <Button variant="success" onClick={calcular} className="gap-2 px-6">
           <CalculatorIcon className="w-6 h-6" />
           Calcular Emissão
         </Button>
 
-        {/* Resultado */}
         {resultado && (
           <div className="alert alert-success shadow-lg mt-6 max-w-3xl">
             <span className="text-lg font-bold whitespace-pre-line">

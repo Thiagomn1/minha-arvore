@@ -2,10 +2,8 @@ import { NextResponse } from "next/server";
 import { UserService } from "@/services/user.service";
 import { registerUserSchema } from "@/lib/validations/schemas";
 import { handleApiError } from "@/lib/api-client";
-import { withRateLimit } from "@/lib/with-rate-limit";
-import { registerRateLimiter } from "@/lib/rate-limit";
 
-async function handler(request: Request) {
+export async function POST(request: Request) {
   try {
     const body = await request.json();
 
@@ -52,5 +50,3 @@ async function handler(request: Request) {
     );
   }
 }
-
-export const POST = withRateLimit(handler, registerRateLimiter);

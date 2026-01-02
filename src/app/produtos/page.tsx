@@ -95,7 +95,6 @@ export default function ProductsPage() {
         onChange={setActive}
       />
 
-      {/* Grid de produtos */}
       <ResponsiveGrid cols={4} gap={8} className="mt-8">
         {products
           .filter(

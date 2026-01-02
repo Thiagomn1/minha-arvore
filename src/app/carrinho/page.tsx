@@ -68,13 +68,11 @@ export default function CartPage() {
 
   return (
     <div className="max-w-5xl mx-auto p-6">
-      {/* Toast Container */}
       <div id="toast-container" className="toast toast-top toast-end" />
 
       <h2 className="text-3xl font-bold mb-6 text-primary">Seu Carrinho</h2>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-        {/* Lista de Itens */}
         <div>
           {items.length === 0 ? (
             <div className="alert alert-info shadow-lg">
@@ -88,7 +86,7 @@ export default function CartPage() {
                   className="card card-bordered bg-base-100 shadow-md"
                 >
                   <div className="card-body p-4 flex flex-row gap-4 items-center">
-                    <div className="w-20 h-20 flex-shrink-0">
+                    <div className="w-20 h-20 shrink-0">
                       <Image
                         src={item.imageUrl}
                         alt={item.name}
@@ -131,7 +129,6 @@ export default function CartPage() {
           )}
         </div>
 
-        {/* Mapa e Checkout */}
         <div>
           <h3 className="font-semibold mb-2">Onde plantar?</h3>
           <MapPickerLazy onPick={setMapLocation} />

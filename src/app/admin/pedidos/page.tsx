@@ -60,7 +60,6 @@ export default function AdminOrdersPage() {
         <p className="text-center text-gray-500">Carregando pedidos...</p>
       ) : (
         <>
-          {/* Tabela desktop */}
           <div className="overflow-x-auto hidden md:block">
             <table className="table table-zebra w-full">
               <thead>
@@ -138,7 +137,6 @@ export default function AdminOrdersPage() {
             </table>
           </div>
 
-          {/* Cards mobile */}
           <div className="grid grid-cols-1 gap-4 md:hidden">
             {orders.map((o) => (
               <Card key={o._id} variant="small" padding="md">
@@ -220,7 +218,6 @@ export default function AdminOrdersPage() {
         )}
       </Modal>
 
-      {/* Lightbox */}
       <Modal
         isOpen={!!lightboxImage}
         onClose={() => setLightboxImage(null)}

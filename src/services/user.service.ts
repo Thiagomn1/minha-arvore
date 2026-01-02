@@ -35,7 +35,7 @@ export class UserService {
       cnpj: data.cnpj,
       telefone: data.telefone,
       endereco: data.endereco,
-      aceitouTermos: data.aceitouTermos,
+      consentimentoLGPD: data.aceitouTermos,
     });
 
     const userObject = user.toObject();

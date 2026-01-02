@@ -12,7 +12,6 @@ export default function PerfilPage() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-base-100 p-6">
       <h1 className="text-2xl font-bold mb-8">Meu Perfil</h1>
       <ResponsiveGrid cols={2} gap={6}>
-        {/* Botão de Pedidos */}
         <Link href={`/pedidos/${session?.user?.id}`}>
           <Card
             variant="small"
@@ -25,7 +24,6 @@ export default function PerfilPage() {
           </Card>
         </Link>
 
-        {/* Botão Editar Dados */}
         <Link href="/perfil/editar">
           <Card
             variant="small"

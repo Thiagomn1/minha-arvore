@@ -37,7 +37,6 @@ export default function AdminUsersPage() {
         <p className="text-center text-gray-500">Carregando usuários...</p>
       ) : (
         <div className="overflow-x-auto">
-          {/* Tabela */}
           <table className="table-zebra hidden md:table w-full">
             <thead>
               <tr>
@@ -79,7 +78,6 @@ export default function AdminUsersPage() {
             </tbody>
           </table>
 
-          {/* Cards em mobile */}
           <ResponsiveGrid cols={2} gap={4} className="md:hidden">
             {users.map((u) => (
               <Card
@@ -118,7 +116,6 @@ export default function AdminUsersPage() {
         </div>
       )}
 
-      {/* Modal de detalhes do usuário */}
       <Modal
         isOpen={!!selectedUser}
         onClose={() => setSelectedUser(null)}

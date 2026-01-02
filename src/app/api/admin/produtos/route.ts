@@ -3,11 +3,6 @@ import { ProductService } from "@/services/product.service";
 import { productSchema, paginationSchema } from "@/lib/validations/schemas";
 import { handleApiError } from "@/lib/api-client";
 
-/**
- * GET /api/admin/produtos
- * Lista todos os produtos (com paginação) - Admin apenas
- * Middleware já valida autenticação e role
- */
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -37,10 +32,6 @@ export async function GET(req: Request) {
   }
 }
 
-/**
- * POST /api/admin/produtos
- * Cria um novo produto - Admin apenas
- */
 export async function POST(req: Request) {
   try {
     const body = await req.json();
@@ -69,10 +60,6 @@ export async function POST(req: Request) {
   }
 }
 
-/**
- * DELETE /api/admin/produtos?id=xxx
- * Deleta um produto - Admin apenas
- */
 export async function DELETE(req: Request) {
   try {
     const { searchParams } = new URL(req.url);

@@ -56,7 +56,6 @@ export default function EditarPerfilPage() {
     <div className="flex min-h-screen bg-base-100">
       <div id="toast-container" className="toast toast-top toast-center" />
 
-      {/* Menu Lateral */}
       <aside className="w-64 bg-base-200 p-4 border-r">
         <ul className="menu">
           <li>
@@ -101,7 +100,6 @@ export default function EditarPerfilPage() {
         </ul>
       </aside>
 
-      {/* Formulários */}
       <main className="flex-1 p-8">
         {menu === "dados" && (
           <form onSubmit={handleSubmit} className="space-y-4 max-w-lg">
@@ -121,7 +119,11 @@ export default function EditarPerfilPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
             />
-            <Button type="submit" variant="success" disabled={updateUserMutation.isPending}>
+            <Button
+              type="submit"
+              variant="success"
+              disabled={updateUserMutation.isPending}
+            >
               {updateUserMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
           </form>
@@ -146,13 +148,11 @@ export default function EditarPerfilPage() {
               onChange={(e) => setBairro(e.target.value)}
             />
 
-            {/* Estado */}
             <div>
               <label className="block text-sm font-medium mb-1">Estado</label>
               <SelectEstado onChange={(uf) => setEstado(uf)} />
             </div>
 
-            {/* Cidade */}
             <div>
               <label className="block text-sm font-medium mb-1">Cidade</label>
               <SelectCidade
@@ -166,7 +166,11 @@ export default function EditarPerfilPage() {
               value={cep}
               onChange={(e) => setCep(e.target.value)}
             />
-            <Button type="submit" variant="success" disabled={updateUserMutation.isPending}>
+            <Button
+              type="submit"
+              variant="success"
+              disabled={updateUserMutation.isPending}
+            >
               {updateUserMutation.isPending ? "Salvando..." : "Salvar"}
             </Button>
           </form>
@@ -192,7 +196,11 @@ export default function EditarPerfilPage() {
               value={confirmNovaSenha}
               onChange={(e) => setConfirmNovaSenha(e.target.value)}
             />
-            <Button type="submit" variant="success" disabled={updateUserMutation.isPending}>
+            <Button
+              type="submit"
+              variant="success"
+              disabled={updateUserMutation.isPending}
+            >
               {updateUserMutation.isPending ? "Salvando..." : "Alterar Senha"}
             </Button>
           </form>

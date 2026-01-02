@@ -10,10 +10,6 @@ import { PasswordSection } from "@/components/registro/PasswordSection";
 import { useRegistrationForm } from "@/hooks/useRegistrationForm";
 import { formatTelefone } from "@/lib/utils/formatters";
 
-/**
- * Página de registro de usuários
- * Refatorada em componentes menores e reutilizáveis
- */
 export default function Register() {
   const {
     formData,
@@ -36,7 +32,6 @@ export default function Register() {
         </div>
       )}
 
-      {/* Imagem lateral - apenas desktop */}
       <div className="hidden md:flex flex-1 items-center justify-center bg-gray-500">
         <Image
           src="/treelogin.svg"
@@ -48,7 +43,6 @@ export default function Register() {
         />
       </div>
 
-      {/* Formulário */}
       <div className="flex flex-1 items-center justify-center p-6">
         <div className="card w-full max-w-md shadow-xl bg-base-100">
           <div className="card-body">
@@ -57,7 +51,6 @@ export default function Register() {
             </h1>
 
             <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-              {/* Tipo de Pessoa (PF/PJ) + CPF/CNPJ */}
               <PersonTypeSection
                 tipoPessoa={formData.tipoPessoa}
                 cpf={formData.cpf}
@@ -68,7 +61,6 @@ export default function Register() {
                 errors={fieldErrors}
               />
 
-              {/* Nome Completo */}
               <FormInput
                 label="Nome Completo"
                 type="text"
@@ -78,7 +70,6 @@ export default function Register() {
                 required
               />
 
-              {/* Email */}
               <FormInput
                 label="Email"
                 type="email"
@@ -89,7 +80,6 @@ export default function Register() {
                 required
               />
 
-              {/* Telefone */}
               <FormInput
                 label="Telefone"
                 type="text"
@@ -102,13 +92,11 @@ export default function Register() {
                 required
               />
 
-              {/* Endereço */}
               <AddressSection
                 endereco={formData.endereco}
                 onChange={updateEndereco}
               />
 
-              {/* Senha e Confirmação */}
               <PasswordSection
                 password={formData.password}
                 confirmPassword={formData.confirmPassword}
@@ -119,7 +107,6 @@ export default function Register() {
                 error={fieldErrors.passwordMatch}
               />
 
-              {/* Consentimento LGPD */}
               <FormCheckbox
                 label={
                   <>
@@ -131,13 +118,14 @@ export default function Register() {
                   </>
                 }
                 checked={formData.consentimentoLGPD}
-                onChange={(e) => updateField("consentimentoLGPD", e.target.checked)}
+                onChange={(e) =>
+                  updateField("consentimentoLGPD", e.target.checked)
+                }
                 error={fieldErrors.consentimento}
               />
 
               {errorMsg && <p className="text-error text-sm">{errorMsg}</p>}
 
-              {/* Botão de Submit */}
               <div className="form-control mt-6">
                 <Button
                   type="submit"
