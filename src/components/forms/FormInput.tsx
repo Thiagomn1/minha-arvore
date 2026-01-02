@@ -6,9 +6,6 @@ interface FormInputProps extends InputHTMLAttributes<HTMLInputElement> {
   fullWidth?: boolean;
 }
 
-/**
- * Componente reutilizável de input com label e erro
- */
 export function FormInput({
   label,
   error,

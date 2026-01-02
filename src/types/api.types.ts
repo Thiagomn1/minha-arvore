@@ -1,7 +1,3 @@
-/**
- * Tipos relacionados a respostas de API
- */
-
 export interface PaginatedResponse<T> {
   data: T[];
   pagination: {

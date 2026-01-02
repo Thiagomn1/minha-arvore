@@ -1,9 +1,5 @@
 import type { UserRole, PersonType } from "@/lib/constants";
 
-/**
- * Tipos relacionados a usuários
- */
-
 export interface Address {
   rua: string;
   numero: string;

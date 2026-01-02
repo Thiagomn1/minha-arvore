@@ -1,6 +1,3 @@
-/**
- * Hook para gerenciar usuários com React Query
- */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import type { User } from "@/types";

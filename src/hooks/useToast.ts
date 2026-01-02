@@ -1,6 +1,3 @@
-/**
- * Hook para exibir toasts/notificações
- */
 import { useCallback } from "react";
 
 export type ToastType = "success" | "error" | "info" | "warning";

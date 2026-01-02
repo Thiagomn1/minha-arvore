@@ -16,9 +16,6 @@ interface PersonTypeSectionProps {
   };
 }
 
-/**
- * Seção do formulário para tipo de pessoa (PF/PJ)
- */
 export function PersonTypeSection({
   tipoPessoa,
   cpf,
@@ -33,9 +30,7 @@ export function PersonTypeSection({
       <FormSelect
         label="Tipo de Pessoa"
         value={tipoPessoa}
-        onChange={(e) =>
-          onTipoPessoaChange(e.target.value as "" | "PF" | "PJ")
-        }
+        onChange={(e) => onTipoPessoaChange(e.target.value as "" | "PF" | "PJ")}
         options={[
           { value: "PF", label: "Pessoa Física" },
           { value: "PJ", label: "Pessoa Jurídica" },

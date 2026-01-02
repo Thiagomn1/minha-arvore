@@ -1,10 +1,6 @@
 import type { OrderStatus } from "@/lib/constants";
 import type { User } from "./user.types";
 
-/**
- * Tipos relacionados a pedidos
- */
-
 export interface OrderProduct {
   _id: string;
   name: string;

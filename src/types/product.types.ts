@@ -1,9 +1,5 @@
 import type { ProductStatus } from "@/lib/constants";
 
-/**
- * Tipos relacionados a produtos
- */
-
 export interface Product {
   _id: string;
   name: string;

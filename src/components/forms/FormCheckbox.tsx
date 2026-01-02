@@ -5,9 +5,6 @@ interface FormCheckboxProps extends InputHTMLAttributes<HTMLInputElement> {
   error?: string;
 }
 
-/**
- * Componente reutilizável de checkbox com label e erro
- */
 export function FormCheckbox({
   label,
   error,

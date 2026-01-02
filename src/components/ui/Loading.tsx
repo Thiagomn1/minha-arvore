@@ -1,13 +1,13 @@
-/**
- * Componentes de Loading reutilizáveis
- */
-
 interface LoadingProps {
   size?: "sm" | "md" | "lg";
   text?: string;
 }
 
-export function LoadingSpinner({ size = "md" }: { size?: LoadingProps["size"] }) {
+export function LoadingSpinner({
+  size = "md",
+}: {
+  size?: LoadingProps["size"];
+}) {
   const sizeClasses = {
     sm: "w-4 h-4 border-2",
     md: "w-8 h-8 border-3",

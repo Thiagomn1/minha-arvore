@@ -3,10 +3,6 @@
 import dynamic from "next/dynamic";
 import { LoadingSpinner } from "./ui/Loading";
 
-/**
- * Componente MapPicker com lazy loading
- * Carrega a biblioteca Leaflet apenas quando necessário
- */
 const MapPicker = dynamic(() => import("./MapPicker"), {
   ssr: false,
   loading: () => (

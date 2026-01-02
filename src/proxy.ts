@@ -1,6 +1,3 @@
-/**
- * Proxy (Middleware) de autenticação e autorização do Next.js 16
- */
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { getToken } from "next-auth/jwt";

@@ -7,9 +7,6 @@ interface FormSelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
   placeholder?: string;
 }
 
-/**
- * Componente reutilizável de select com label e erro
- */
 export function FormSelect({
   label,
   error,
@@ -23,7 +20,10 @@ export function FormSelect({
       <label className="label">
         <span className="label-text font-semibold">{label}</span>
       </label>
-      <select className={`select select-bordered w-full ${className}`} {...props}>
+      <select
+        className={`select select-bordered w-full ${className}`}
+        {...props}
+      >
         <option value="">{placeholder}</option>
         {options.map((opt) => (
           <option key={opt.value} value={opt.value}>

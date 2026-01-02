@@ -14,11 +14,10 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
     <div
       className={`absolute top-0 left-0 w-full z-50 navbar ${
         gradient
-          ? "bg-gradient-to-b from-gray-400 to-transparent"
+          ? "bg-linear-to-b from-gray-400 to-transparent"
           : "bg-white border-b-2 border-gray-200"
       }`}
     >
-      {/* navbar-start */}
       <div className="navbar-start">
         <Link
           href="/"
@@ -28,7 +27,6 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
         </Link>
       </div>
 
-      {/* navbar-center */}
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li>
@@ -43,7 +41,6 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
         </ul>
       </div>
 
-      {/* navbar-end */}
       <div className="navbar-end flex items-center gap-2">
         {loading ? (
           <div className="btn btn-success rounded-md text-base loading">
@@ -109,7 +106,6 @@ export default function Navbar({ gradient = false }: { gradient?: boolean }) {
               </ul>
             </div>
 
-            {/* Menu para telas pequenas */}
             <div className="dropdown dropdown-end lg:hidden">
               <label tabIndex={0} className="btn btn-ghost btn-circle">
                 <Bars3Icon className="h-6 w-6" />

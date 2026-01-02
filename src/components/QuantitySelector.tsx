@@ -14,7 +14,6 @@ export default function QuantitySelector({ product }: { product: Product }) {
 
   return (
     <div className="flex flex-col gap-4">
-      {/* Contador */}
       {product.status === "Disponível" && (
         <div className="flex items-center gap-2 border rounded-lg px-2 py-1 w-fit">
           <Button
@@ -39,7 +38,6 @@ export default function QuantitySelector({ product }: { product: Product }) {
         </div>
       )}
 
-      {/* Usa o mesmo AddToCartButton do projeto */}
       <AddToCartButton product={product} quantity={qty} />
     </div>
   );

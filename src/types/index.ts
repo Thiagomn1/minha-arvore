@@ -1,8 +1,3 @@
-/**
- * Exportação centralizada de todos os tipos
- * Organize imports por domínio
- */
-
 export type { Product, Category, CartItem } from "./product.types";
 
 export type { User, Address, SessionUser } from "./user.types";

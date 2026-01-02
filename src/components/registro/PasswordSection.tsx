@@ -8,9 +8,6 @@ interface PasswordSectionProps {
   error?: string;
 }
 
-/**
- * Seção do formulário para senha e confirmação
- */
 export function PasswordSection({
   password,
   confirmPassword,

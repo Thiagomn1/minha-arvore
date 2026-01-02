@@ -1,6 +1,3 @@
-/**
- * Hook para autenticação com React Query
- */
 import { useMutation } from "@tanstack/react-query";
 
 interface RegisterData {

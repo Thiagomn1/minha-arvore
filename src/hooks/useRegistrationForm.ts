@@ -53,9 +53,6 @@ const INITIAL_FORM_DATA: FormData = {
   consentimentoLGPD: false,
 };
 
-/**
- * Hook customizado para gerenciar lógica do formulário de registro
- */
 export function useRegistrationForm() {
   const router = useRouter();
   const registerMutation = useRegister();
@@ -66,7 +63,10 @@ export function useRegistrationForm() {
 
   const isEmailValid = (value: string) => /\S+@\S+\.\S+/.test(value);
 
-  const updateField = <K extends keyof FormData>(field: K, value: FormData[K]) => {
+  const updateField = <K extends keyof FormData>(
+    field: K,
+    value: FormData[K]
+  ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -119,7 +119,9 @@ export function useRegistrationForm() {
     }
 
     if (!formData.consentimentoLGPD) {
-      setFieldErrors({ consentimento: "Você precisa aceitar a política de privacidade" });
+      setFieldErrors({
+        consentimento: "Você precisa aceitar a política de privacidade",
+      });
       return false;
     }
 
@@ -135,8 +137,14 @@ export function useRegistrationForm() {
       await registerMutation.mutateAsync({
         name: formData.name,
         tipoPessoa: formData.tipoPessoa as "PF" | "PJ",
-        cpf: formData.tipoPessoa === "PF" ? removeFormatting(formData.cpf) : undefined,
-        cnpj: formData.tipoPessoa === "PJ" ? removeFormatting(formData.cnpj) : undefined,
+        cpf:
+          formData.tipoPessoa === "PF"
+            ? removeFormatting(formData.cpf)
+            : undefined,
+        cnpj:
+          formData.tipoPessoa === "PJ"
+            ? removeFormatting(formData.cnpj)
+            : undefined,
         email: formData.email,
         telefone: removeFormatting(formData.telefone),
         endereco: formData.endereco,

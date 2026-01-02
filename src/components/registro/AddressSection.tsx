@@ -16,9 +16,6 @@ interface AddressSectionProps {
   onChange: (field: keyof Address, value: string) => void;
 }
 
-/**
- * Seção do formulário para endereço
- */
 export function AddressSection({ endereco, onChange }: AddressSectionProps) {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

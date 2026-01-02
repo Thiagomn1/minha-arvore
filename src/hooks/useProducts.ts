@@ -1,6 +1,3 @@
-/**
- * Hook para gerenciar produtos com React Query
- */
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { apiClient } from "@/lib/api-client";
 import type { Product } from "@/types";
@@ -110,13 +107,7 @@ export function useUpdateProductStatus() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({
-      id,
-      status,
-    }: {
-      id: string;
-      status: string;
-    }) => {
+    mutationFn: async ({ id, status }: { id: string; status: string }) => {
       return apiClient.patch(`/admin/produtos/${id}/status`, { status });
     },
     onSuccess: (_, variables) => {
