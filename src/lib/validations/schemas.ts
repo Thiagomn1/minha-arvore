@@ -93,17 +93,18 @@ export const createOrderSchema = z.object({
   products: z
     .array(
       z.object({
-        productId: z.string(),
-        quantity: z.number().int().positive(),
-        price: z.number().positive(),
+        _id: z.any(),
+        name: z.string(),
+        imageUrl: z.string().optional(),
+        qty: z.number().int().positive(),
       })
     )
     .min(1, "O pedido deve ter pelo menos um produto"),
   total: z.number().positive("Total deve ser positivo"),
   location: z
     .object({
-      lat: z.number(),
-      lng: z.number(),
+      latitude: z.number(),
+      longitude: z.number(),
     })
     .optional(),
 });

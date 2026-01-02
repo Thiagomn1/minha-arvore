@@ -1,10 +1,5 @@
 import { passwordSchema } from "./schemas";
 
-/**
- * Valida uma senha usando o schema Zod centralizado
- * @param password - Senha a ser validada
- * @returns null se válida, ou mensagem de erro se inválida
- */
 export function validatePassword(password: string): string | null {
   const result = passwordSchema.safeParse(password);
 
@@ -15,9 +10,6 @@ export function validatePassword(password: string): string | null {
   return result.error.issues[0]?.message || "Senha inválida";
 }
 
-/**
- * Obtém os requisitos de senha em formato legível
- */
 export function getPasswordRequirements(): string[] {
   return [
     "Mínimo de 6 caracteres",

@@ -10,17 +10,6 @@ export async function POST(req: Request) {
 
     const { products, userId, location } = body;
 
-    const orderData = {
-      products,
-      total: 0,
-      location: location
-        ? {
-            lat: location.latitude || location.lat,
-            lng: location.longitude || location.lng,
-          }
-        : undefined,
-    };
-
     const productIds = products.map((p: any) => p._id || p.productId);
     const dbProductsPromises = productIds.map((id: string) =>
       ProductService.getProductById(id)
@@ -48,14 +37,23 @@ export async function POST(req: Request) {
       total += price * quantity;
 
       return {
-        productId: product._id.toString(),
-        quantity,
-        price,
+        _id: product._id,
+        name: product.name,
+        imageUrl: product.imageUrl,
+        qty: quantity,
       };
     });
 
-    orderData.products = orderProducts;
-    orderData.total = total;
+    const orderData = {
+      products: orderProducts,
+      total,
+      location: location
+        ? {
+            latitude: location.latitude || location.lat,
+            longitude: location.longitude || location.lng,
+          }
+        : undefined,
+    };
 
     const validationResult = createOrderSchema.safeParse(orderData);
 

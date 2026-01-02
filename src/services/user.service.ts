@@ -1,6 +1,3 @@
-/**
- * Serviço de Usuário - Lógica de negócio relacionada a usuários
- */
 import dbConnect from "@/lib/db/mongoose";
 import User from "@/models/User";
 import bcrypt from "bcryptjs";
@@ -13,9 +10,6 @@ import type {
 } from "@/lib/validations/schemas";
 
 export class UserService {
-  /**
-   * Registra um novo usuário
-   */
   static async registerUser(data: RegisterUserInput) {
     await dbConnect();
 
@@ -44,17 +38,11 @@ export class UserService {
     return userObject;
   }
 
-  /**
-   * Busca usuário por email
-   */
   static async getUserByEmail(email: string) {
     await dbConnect();
     return await User.findOne({ email });
   }
 
-  /**
-   * Busca usuário por ID
-   */
   static async getUserById(userId: string) {
     await dbConnect();
     const user = await User.findById(userId).select("-password");
@@ -64,9 +52,6 @@ export class UserService {
     return user;
   }
 
-  /**
-   * Atualiza dados pessoais do usuário
-   */
   static async updateUserDados(userId: string, data: UpdateUserDadosInput) {
     await dbConnect();
 
@@ -81,7 +66,10 @@ export class UserService {
 
     if (data.nome) user.name = data.nome;
     if (data.email) {
-      const existingUser = await User.findOne({ email: data.email, _id: { $ne: userId } });
+      const existingUser = await User.findOne({
+        email: data.email,
+        _id: { $ne: userId },
+      });
       if (existingUser) {
         throw new Error("Email já está em uso");
       }
@@ -95,10 +83,10 @@ export class UserService {
     return userObject;
   }
 
-  /**
-   * Atualiza endereço do usuário
-   */
-  static async updateUserEndereco(userId: string, data: UpdateUserEnderecoInput) {
+  static async updateUserEndereco(
+    userId: string,
+    data: UpdateUserEnderecoInput
+  ) {
     await dbConnect();
 
     const user = await User.findById(userId);
@@ -107,14 +95,19 @@ export class UserService {
     }
 
     const endereco = data.endereco;
-    if (!endereco || Object.values(endereco).every((v) => !v || v.trim() === "")) {
+    if (
+      !endereco ||
+      Object.values(endereco).every((v) => !v || v.trim() === "")
+    ) {
       throw new Error("Preencha ao menos um campo de endereço para atualizar");
     }
 
     user.endereco = {
       ...user.endereco.toObject(),
       ...Object.fromEntries(
-        Object.entries(endereco).filter(([, value]) => value && value.trim() !== "")
+        Object.entries(endereco).filter(
+          ([, value]) => value && value.trim() !== ""
+        )
       ),
     };
 
@@ -125,9 +118,6 @@ export class UserService {
     return userObject;
   }
 
-  /**
-   * Atualiza senha do usuário
-   */
   static async updateUserSenha(userId: string, data: UpdateUserSenhaInput) {
     await dbConnect();
 
@@ -151,16 +141,17 @@ export class UserService {
     return userObject;
   }
 
-  /**
-   * Lista todos os usuários (Admin)
-   */
   static async getAllUsers(page: number = 1, limit: number = 10) {
     await dbConnect();
 
     const skip = (page - 1) * limit;
 
     const [users, total] = await Promise.all([
-      User.find().select("-password").skip(skip).limit(limit).sort({ createdAt: -1 }),
+      User.find()
+        .select("-password")
+        .skip(skip)
+        .limit(limit)
+        .sort({ createdAt: -1 }),
       User.countDocuments(),
     ]);
 
@@ -175,9 +166,6 @@ export class UserService {
     };
   }
 
-  /**
-   * Promove usuário a Admin
-   */
   static async promoteToAdmin(userId: string) {
     await dbConnect();
 
@@ -194,9 +182,6 @@ export class UserService {
     return userObject;
   }
 
-  /**
-   * Valida credenciais de login
-   */
   static async validateCredentials(email: string, password: string) {
     await dbConnect();
 

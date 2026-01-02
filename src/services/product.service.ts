@@ -1,21 +1,20 @@
-/**
- * Serviço de Produto - Lógica de negócio relacionada a produtos
- */
 import dbConnect from "@/lib/db/mongoose";
 import Product from "@/models/Product";
 import { ERROR_MESSAGES, PRODUCT_STATUS } from "@/lib/constants";
-import type { ProductInput, UpdateProductInput } from "@/lib/validations/schemas";
+import type {
+  ProductInput,
+  UpdateProductInput,
+} from "@/lib/validations/schemas";
 
 export class ProductService {
-  /**
-   * Lista todos os produtos com paginação e filtros
-   */
-  static async getAllProducts(options: {
-    page?: number;
-    limit?: number;
-    category?: string;
-    status?: string;
-  } = {}) {
+  static async getAllProducts(
+    options: {
+      page?: number;
+      limit?: number;
+      category?: string;
+      status?: string;
+    } = {}
+  ) {
     await dbConnect();
 
     const { page = 1, limit = 10, category, status } = options;
@@ -41,9 +40,6 @@ export class ProductService {
     };
   }
 
-  /**
-   * Busca produto por ID
-   */
   static async getProductById(productId: string) {
     await dbConnect();
 
@@ -55,9 +51,6 @@ export class ProductService {
     return product;
   }
 
-  /**
-   * Cria um novo produto (Admin)
-   */
   static async createProduct(data: ProductInput) {
     await dbConnect();
 
@@ -65,9 +58,6 @@ export class ProductService {
     return product;
   }
 
-  /**
-   * Atualiza um produto (Admin)
-   */
   static async updateProduct(productId: string, data: UpdateProductInput) {
     await dbConnect();
 
@@ -84,9 +74,6 @@ export class ProductService {
     return product;
   }
 
-  /**
-   * Altera o status de um produto (Admin)
-   */
   static async updateProductStatus(productId: string, status: string) {
     await dbConnect();
 
@@ -103,9 +90,6 @@ export class ProductService {
     return product;
   }
 
-  /**
-   * Deleta um produto (Admin)
-   */
   static async deleteProduct(productId: string) {
     await dbConnect();
 
@@ -118,17 +102,19 @@ export class ProductService {
     return product;
   }
 
-  /**
-   * Busca produtos por categoria
-   */
-  static async getProductsByCategory(category: string, page: number = 1, limit: number = 10) {
+  static async getProductsByCategory(
+    category: string,
+    page: number = 1,
+    limit: number = 10
+  ) {
     return this.getAllProducts({ page, limit, category });
   }
 
-  /**
-   * Busca apenas produtos disponíveis
-   */
   static async getAvailableProducts(page: number = 1, limit: number = 10) {
-    return this.getAllProducts({ page, limit, status: PRODUCT_STATUS.AVAILABLE });
+    return this.getAllProducts({
+      page,
+      limit,
+      status: PRODUCT_STATUS.AVAILABLE,
+    });
   }
 }

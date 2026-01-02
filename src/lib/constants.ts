@@ -1,7 +1,3 @@
-/**
- * Constantes centralizadas do sistema
- */
-
 export const PRODUCT_STATUS = {
   AVAILABLE: "Disponível",
   UNAVAILABLE: "Indisponível",

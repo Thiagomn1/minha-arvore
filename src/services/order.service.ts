@@ -1,19 +1,18 @@
-/**
- * Serviço de Pedido - Lógica de negócio relacionada a pedidos
- */
 import dbConnect from "@/lib/db/mongoose";
 import Order from "@/models/Order";
 import { ERROR_MESSAGES, ORDER_STATUS } from "@/lib/constants";
-import type { CreateOrderInput, UpdateOrderStatusInput } from "@/lib/validations/schemas";
+import type {
+  CreateOrderInput,
+  UpdateOrderStatusInput,
+} from "@/lib/validations/schemas";
 
 export class OrderService {
-  /**
-   * Cria um novo pedido
-   */
   static async createOrder(userId: string, data: CreateOrderInput) {
     await dbConnect();
 
-    const orderId = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const orderId = `ORD-${Date.now()}-${Math.random()
+      .toString(36)
+      .substr(2, 9)}`;
 
     const order = await Order.create({
       userId,
@@ -27,13 +26,13 @@ export class OrderService {
     return order;
   }
 
-  /**
-   * Busca pedido por ID
-   */
   static async getOrderById(orderId: string) {
     await dbConnect();
 
-    const order = await Order.findById(orderId).populate("userId", "name email");
+    const order = await Order.findById(orderId).populate(
+      "userId",
+      "name email"
+    );
     if (!order) {
       throw new Error(ERROR_MESSAGES.ORDER_NOT_FOUND);
     }
@@ -41,19 +40,17 @@ export class OrderService {
     return order;
   }
 
-  /**
-   * Lista pedidos de um usuário
-   */
-  static async getUserOrders(userId: string, page: number = 1, limit: number = 10) {
+  static async getUserOrders(
+    userId: string,
+    page: number = 1,
+    limit: number = 10
+  ) {
     await dbConnect();
 
     const skip = (page - 1) * limit;
 
     const [orders, total] = await Promise.all([
-      Order.find({ userId })
-        .skip(skip)
-        .limit(limit)
-        .sort({ createdAt: -1 }),
+      Order.find({ userId }).skip(skip).limit(limit).sort({ createdAt: -1 }),
       Order.countDocuments({ userId }),
     ]);
 
@@ -68,14 +65,13 @@ export class OrderService {
     };
   }
 
-  /**
-   * Lista todos os pedidos (Admin)
-   */
-  static async getAllOrders(options: {
-    page?: number;
-    limit?: number;
-    status?: string;
-  } = {}) {
+  static async getAllOrders(
+    options: {
+      page?: number;
+      limit?: number;
+      status?: string;
+    } = {}
+  ) {
     await dbConnect();
 
     const { page = 1, limit = 10, status } = options;
@@ -104,10 +100,10 @@ export class OrderService {
     };
   }
 
-  /**
-   * Atualiza o status de um pedido (Admin)
-   */
-  static async updateOrderStatus(orderId: string, data: UpdateOrderStatusInput) {
+  static async updateOrderStatus(
+    orderId: string,
+    data: UpdateOrderStatusInput
+  ) {
     await dbConnect();
 
     const order = await Order.findByIdAndUpdate(
@@ -123,9 +119,6 @@ export class OrderService {
     return order;
   }
 
-  /**
-   * Faz upload da imagem da muda plantada (Admin)
-   */
   static async uploadOrderImage(orderId: string, imageUrl: string) {
     await dbConnect();
 
@@ -142,9 +135,6 @@ export class OrderService {
     return order;
   }
 
-  /**
-   * Busca a foto de um pedido
-   */
   static async getOrderImage(orderId: string) {
     await dbConnect();
 
@@ -156,9 +146,6 @@ export class OrderService {
     return order.mudaImage;
   }
 
-  /**
-   * Deleta um pedido (Admin)
-   */
   static async deleteOrder(orderId: string) {
     await dbConnect();
 
